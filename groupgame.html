@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundQuest Game</title>
+    <link rel="stylesheet" href="groupg.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header">
+            <span>Ժամանակ:</span>
+            <div class="timer" id="timer-bar"></div>
+            <span class="close-btn">✕</span>
+        </div>
+        <div class="media" id="media-container">
+            <audio id="media" controls autoplay></audio>
+        </div>
+        <div class="buttons">
+            <button class="action-btn" id="skip-btn">Skip</button>
+            <button class="action-btn" id="guess-btn">Guess</button>
+        </div>
+        <div class="score" id="score">Score: 0</div>
+    </div>
+
+    <script src="gamgroup.js"></script>
+</body>
+</html>
