@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ՍաունդՔվեսթ</title>
+  <link rel="stylesheet" href="categoryP.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+          <div class="name">ՍաունդՔվեսթ</div>
+          <button class="top-button">ՀԱ</button>
+        </div>
+      
+        <div class="title">Կատեգորիաներ</div>
+      
+        <div class="mix-grid">
+            <label class="mix-box">
+              <input type="radio" name="mix" value="armenian" />
+              <img src="armMix.jpg" alt="Armenian mix">
+            </label>
+          
+            <label class="mix-box">
+              <input type="radio" name="mix" value="russian" />
+              <img src="rusMix.jpg" alt="Russian mix">
+            </label>
+          
+            <label class="mix-box">
+              <input type="radio" name="mix" value="english" />
+              <img src="engMix.jpg" alt="English mix">
+            </label>
+          
+            <label class="mix-box">
+              <input type="radio" name="mix" value="mix" />
+              <img src="mix.jpg" alt="Mix">
+            </label>
+          </div>
+          
+      
+        <button class="start-button">Սկսել</button>
+      </div>
+      
+      <script>
+        const mode = localStorage.getItem('selectedMode');
+        
+        if (mode) {
+          console.log("Selected mode:", mode);
+    
+          const modeTextElement = document.getElementById('selected-mode-text');
+          if (mode === 'group') {
+            modeTextElement.textContent = 'Խմբով երաժշտություն';
+          } else if (mode === 'solo') {
+            modeTextElement.textContent = 'Մենակ երաժշտություն';
+          }
+        }
+    
+        const selectedMix = localStorage.getItem('selectedMix');
+    
+        if (selectedMix) {
+          const selectedRadioButton = document.getElementById(selectedMix);
+          if (selectedRadioButton) {
+            selectedRadioButton.checked = true;
+          }
+        }
+    
+        const radioButtons = document.querySelectorAll('input[name="mix"]');
+        radioButtons.forEach((button) => {
+          button.addEventListener('change', function() {
+            localStorage.setItem('selectedMix', this.id);
+            console.log("Selected mix:", this.value);
+          });
+        });
+      </script>
+  <script src="js.js"></script>
+</body>
+</html>
