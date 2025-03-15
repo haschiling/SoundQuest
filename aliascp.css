@@ -1,5 +1,5 @@
 body {
-    background-color: #4d4f7a;
+    background-color: #3A3D7A;
     color: white;
     font-family: Arial, sans-serif;
     display: flex;
@@ -35,7 +35,7 @@ input[type="text"] {
     margin: 5px 0;
     border: none;
     border-radius: 5px;
-    background-color: #746eaa;
+    background-color: #312d5a;
     color: white;
     text-align: center;
     width: 100%;
@@ -49,8 +49,8 @@ input[type="text"] {
 
 .score-column {
     width: 45%;
-    background-color: #4d4f7a;
-    border: 2px solid #746eaa;
+    background-color: #312d5a;
+    border: 2px solid #9C97F1;
     padding: 10px;
     text-align: center;
 }
@@ -68,7 +68,7 @@ input[type="text"] {
 }
 
 button {
-    background-color: #746eaa;
+    background-color: #9C97F1;
     color: white;
     padding: 12px 20px;
     border: none;

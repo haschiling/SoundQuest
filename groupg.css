@@ -1,5 +1,5 @@
 body {
-    background-color: #2d2c52;
+    background-color: #3A3D7A;
     color: white;
     font-family: Arial, sans-serif;
     margin: 0;
@@ -11,7 +11,7 @@ body {
 }
 
 .quiz-container {
-    background-color: #403B6A;
+    background-color: #312d5a;
     width: 90%;
     max-width: 400px;
     border-radius: 15px;
@@ -55,7 +55,7 @@ body {
 }
 
 .action-btn {
-    background-color: #7f73b5;
+    background-color: #9C97F1;
     color: white;
     padding: 15px 30px;
     margin: 5px;
@@ -66,12 +66,12 @@ body {
 }
 
 .action-btn:hover {
-    background-color: #6a5da6;
+    background-color: #9C97F1;
 }
 
 .action-btn:active {
     background-color: white;
-    color: #7f73b5;
+    color: #9C97F1;
 }
 
 .score {
