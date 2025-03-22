@@ -10,69 +10,36 @@
     <div class="container">
         <div class="top-bar">
           <div class="name">ՍաունդՔվեսթ</div>
-          <button class="top-button">ՀԱ</button>
+          <button class="top-button" id="toggle-mode">ՀԱ</button> <!-- Mode Toggle Button -->
         </div>
       
         <div class="title">Կատեգորիաներ</div>
       
         <div class="mix-grid">
             <label class="mix-box">
-              <input type="radio" name="mix" value="armenian" />
+              <input type="radio" name="mix" value="armenian" id="armenian" />
               <img src="armMix.jpg" alt="Armenian mix">
             </label>
           
             <label class="mix-box">
-              <input type="radio" name="mix" value="russian" />
+              <input type="radio" name="mix" value="russian" id="russian" />
               <img src="rusMix.jpg" alt="Russian mix">
             </label>
           
             <label class="mix-box">
-              <input type="radio" name="mix" value="english" />
+              <input type="radio" name="mix" value="english" id="english" />
               <img src="engMix.jpg" alt="English mix">
             </label>
           
             <label class="mix-box">
-              <input type="radio" name="mix" value="mix" />
+              <input type="radio" name="mix" value="mix" id="mix" />
               <img src="mix.jpg" alt="Mix">
             </label>
-          </div>
-          
+        </div>
       
-        <button class="start-button">Սկսել</button>
-      </div>
+        <button class="start-button" id="start-button">Սկսել</button> <!-- Start Button -->
+    </div>
       
-      <script>
-        const mode = localStorage.getItem('selectedMode');
-        
-        if (mode) {
-          console.log("Selected mode:", mode);
-    
-          const modeTextElement = document.getElementById('selected-mode-text');
-          if (mode === 'group') {
-            modeTextElement.textContent = 'Խմբով երաժշտություն';
-          } else if (mode === 'solo') {
-            modeTextElement.textContent = 'Մենակ երաժշտություն';
-          }
-        }
-    
-        const selectedMix = localStorage.getItem('selectedMix');
-    
-        if (selectedMix) {
-          const selectedRadioButton = document.getElementById(selectedMix);
-          if (selectedRadioButton) {
-            selectedRadioButton.checked = true;
-          }
-        }
-    
-        const radioButtons = document.querySelectorAll('input[name="mix"]');
-        radioButtons.forEach((button) => {
-          button.addEventListener('change', function() {
-            localStorage.setItem('selectedMix', this.id);
-            console.log("Selected mix:", this.value);
-          });
-        });
-      </script>
-  <script src="jsss.js"></script>
+    <script src="jsss.js"></script> <!-- External JS file -->
 </body>
 </html>
-
