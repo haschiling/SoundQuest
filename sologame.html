@@ -11,14 +11,17 @@
         <div class="header">
             <span>Ժամանակ:</span>
             <div class="timer" id="timer-bar"></div>
+            <span id="countdown-text">1:00</span>
             <span class="close-btn">✕</span>
         </div>
-        <div class="media" id="media-container">
-            <img id="media" src="clip1.jpg" alt="Clip">
-        </div>
-        <div class="options" id="options-container"></div>
+        <div id="media-container"></div>
+        <div id="options-container" class="center-buttons"></div>
+
     </div>
 
-    <script src="solgame.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js" type="module"></script>
+    
+    <script type="module" src="solgame.js"></script>
 </body>
 </html>
