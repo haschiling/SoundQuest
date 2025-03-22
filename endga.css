@@ -1,0 +1,96 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #3C4A8A;
+    color: white;
+    text-align: center;
+}
+
+.result-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.game-mode {
+    background-color: #606DB6;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.score-box {
+    background-color: #7D89D0;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 22px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+#score {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.song-list {
+    background-color: #7D89D0;
+    padding: 20px;
+    border-radius: 20px;
+    width: 80%;
+    max-width: 500px;
+}
+
+.song-item {
+    font-size: 20px;
+    margin: 5px 0;
+}
+
+.song-item.correct {
+    color: white;
+}
+
+.song-item.wrong {
+    color: gray;
+}
+
+.button-container {
+    display: flex;
+    gap: 20px;
+}
+
+button {
+    background-color: #606DB6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4E5A98;
+}
+
+@media (max-width: 768px) {
+    .result-board {
+        gap: 15px;
+    }
+
+    .score-box, .song-list {
+        width: 90%;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+}
