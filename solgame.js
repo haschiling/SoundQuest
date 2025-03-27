@@ -1,18 +1,16 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// 🔹 Replace with your actual Supabase details
 const SUPABASE_URL = "https://gbpcccwimpsnvopjyxes.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0";
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let optionsContainer, mediaContainer, countdownText, timerBar;
 let questions = [];
 let currentQuestionIndex = 0;
 let timerInterval;
-let timeLeft = 60;  // Set the initial time for each question
+let timeLeft = 60; 
 let isTimerRunning = false;
-let answered = false;  // To track if the user has already answered the question
+let answered = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     optionsContainer = document.getElementById('options-container');
@@ -28,8 +26,28 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function fetchQuestions() {
+    const selectedCategory = localStorage.getItem('selectedMix');
+    console.log("Selected category from localStorage:", selectedCategory);
+
+    if (!selectedCategory) {
+        console.error("No category selected. Please select a category first.");
+        return;
+    }
+
+    let tableName = '';
+    if (selectedCategory === 'armMix' || selectedCategory === 'armenian') {
+        tableName = 'armMix';  
+    } else if (selectedCategory === 'rusMix' || selectedCategory === 'russian') {
+        tableName = 'rusMix';  
+    } else if (selectedCategory === 'engMix' || selectedCategory === 'english') {
+        tableName = 'engMix'; 
+    } else {
+        console.error("Invalid category selected.");
+        return;
+    }
+
     const { data, error } = await supabase
-        .from('questions')
+        .from(tableName)
         .select('id, fileUrl, options, correctAnswer');
 
     if (error) {
@@ -37,32 +55,30 @@ async function fetchQuestions() {
         return;
     }
 
-    console.log("Fetched data:", data);  // Log the fetched data
+    console.log("Fetched data:", data);  
 
     if (data && data.length > 0) {
         questions = data;
         loadQuestion();
     } else {
-        console.warn("No questions found in the database. Check your Supabase table.");
+        console.warn("No questions found in the database for category:", selectedCategory);
     }
 }
+
 
 function loadQuestion() {
     if (questions.length === 0) return;
 
     const question = questions[currentQuestionIndex];
 
-    // Log the type of options for debugging
     console.log("Type of question.options:", typeof question.options);
     console.log("question.options:", question.options);
 
-    // Ensure to reference the correct fields in your database schema
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
-    stopTimer();  // Stop the timer when the question is changed
-    answered = false; // Reset answered status when loading a new question
+    stopTimer(); 
+    answered = false; 
 
-    // Assuming `fileUrl` is the URL for the video
     mediaContainer.innerHTML = `
         <video id="video-player" controls autoplay>
             <source src="${question.fileUrl}?t=${Date.now()}" type="video/mp4">
@@ -70,21 +86,16 @@ function loadQuestion() {
         </video>
     `;
 
-    // Handle options (if options are a string or not an array)
     let options = question.options;
 
-    // If options is a string, split it into an array
     if (typeof options === 'string') {
-        options = options.split(',').map(option => option.trim()); // Split by commas and trim spaces
+        options = options.split(',').map(option => option.trim());
     } else if (typeof options === 'object' && !Array.isArray(options)) {
-        // If options is an object but not an array, convert it to an array
-        options = Object.values(options);  // Convert object values into an array
+        options = Object.values(options); 
     }
 
-    // Log the final options array to check if it's correct
     console.log("Processed options array:", options);
 
-    // Ensure options is now an array before using `forEach`
     if (Array.isArray(options)) {
         options.forEach(option => {
             const button = document.createElement('button');
@@ -97,28 +108,35 @@ function loadQuestion() {
         console.error("Options is not an array. Please check the data format.");
     }
 
-    // Start the timer when the video ends
     const videoElement = document.getElementById('video-player');
     videoElement.onended = () => {
-        if (!isTimerRunning && !answered) {  // Only start the timer if it hasn't been started yet and no answer has been selected
+        if (!isTimerRunning && !answered) {  
             startTimer();
         }
     };
 }
 
 function checkAnswer(selected, correct) {
-    if (answered) return; // Prevent answering again if the question has already been answered
+    if (answered) return; 
 
-    answered = true; // Mark that the question has been answered
+    answered = true; 
 
-    if (selected === correct) {
+    console.log("Selected answer:", selected);
+    console.log("Correct answer:", correct);
+
+    const selectedTrimmed = selected.trim().toLowerCase();
+    const correctTrimmed = correct.trim().toLowerCase();
+
+    if (selectedTrimmed === correctTrimmed) {
         alert("✅ Correct!");
     } else {
         alert("❌ Wrong!");
     }
-    stopTimer(); // Stop the timer as soon as an answer is selected
+
+    stopTimer(); 
     nextQuestion();
 }
+
 
 function startTimer() {
     if (isTimerRunning || timeLeft <= 0) return;
@@ -128,13 +146,13 @@ function startTimer() {
     updateCountdownText();
 
     timerInterval = setInterval(() => {
-        timeLeft--;  // Decrease time every second
+        timeLeft--; 
         updateTimerBar();
         updateCountdownText();
 
         if (timeLeft <= 0) {
             stopTimer();
-            nextQuestion();  // Automatically move to the next question when the time is up
+            nextQuestion();  
         }
     }, 1000);
 }
@@ -145,15 +163,14 @@ function stopTimer() {
 }
 
 function updateTimerBar() {
-    timerBar.style.width = (timeLeft / 60) * 100 + "%";  // Update the progress bar
+    timerBar.style.width = (timeLeft / 60) * 100 + "%";  
 }
 
 function updateCountdownText() {
-    countdownText.textContent = `${timeLeft}s`;  // Update the countdown timer
+    countdownText.textContent = `${timeLeft}s`; 
 }
 
 function nextQuestion() {
     currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
-    // Do not reset the timeLeft; it continues from the previous question's remaining time
     loadQuestion();
 }
