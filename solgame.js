@@ -10,8 +10,9 @@ let optionsContainer, mediaContainer, countdownText, timerBar;
 let questions = [];
 let currentQuestionIndex = 0;
 let timerInterval;
-let timeLeft = 60;
+let timeLeft = 60;  // Set the initial time for each question
 let isTimerRunning = false;
+let answered = false;  // To track if the user has already answered the question
 
 document.addEventListener("DOMContentLoaded", () => {
     optionsContainer = document.getElementById('options-container');
@@ -58,7 +59,8 @@ function loadQuestion() {
     // Ensure to reference the correct fields in your database schema
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
-    stopTimer();
+    stopTimer();  // Stop the timer when the question is changed
+    answered = false; // Reset answered status when loading a new question
 
     // Assuming `fileUrl` is the URL for the video
     mediaContainer.innerHTML = `
@@ -95,17 +97,26 @@ function loadQuestion() {
         console.error("Options is not an array. Please check the data format.");
     }
 
-    setTimeout(() => {
-        if (!isTimerRunning) startTimer();
-    }, 2000);
+    // Start the timer when the video ends
+    const videoElement = document.getElementById('video-player');
+    videoElement.onended = () => {
+        if (!isTimerRunning && !answered) {  // Only start the timer if it hasn't been started yet and no answer has been selected
+            startTimer();
+        }
+    };
 }
 
 function checkAnswer(selected, correct) {
+    if (answered) return; // Prevent answering again if the question has already been answered
+
+    answered = true; // Mark that the question has been answered
+
     if (selected === correct) {
         alert("✅ Correct!");
     } else {
         alert("❌ Wrong!");
     }
+    stopTimer(); // Stop the timer as soon as an answer is selected
     nextQuestion();
 }
 
@@ -117,13 +128,13 @@ function startTimer() {
     updateCountdownText();
 
     timerInterval = setInterval(() => {
-        timeLeft--;
+        timeLeft--;  // Decrease time every second
         updateTimerBar();
         updateCountdownText();
 
         if (timeLeft <= 0) {
             stopTimer();
-            nextQuestion();
+            nextQuestion();  // Automatically move to the next question when the time is up
         }
     }, 1000);
 }
@@ -134,15 +145,15 @@ function stopTimer() {
 }
 
 function updateTimerBar() {
-    timerBar.style.width = (timeLeft / 60) * 100 + "%";
+    timerBar.style.width = (timeLeft / 60) * 100 + "%";  // Update the progress bar
 }
 
 function updateCountdownText() {
-    countdownText.textContent = `${timeLeft}s`;
+    countdownText.textContent = `${timeLeft}s`;  // Update the countdown timer
 }
 
 function nextQuestion() {
     currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
-    timeLeft = 60;
+    // Do not reset the timeLeft; it continues from the previous question's remaining time
     loadQuestion();
 }
