@@ -10,7 +10,7 @@ let currentQuestionIndex = 0;
 let timerInterval;
 let timeLeft = 60; 
 let isTimerRunning = false;
-let answered = false;
+let answered = false; 
 
 document.addEventListener("DOMContentLoaded", () => {
     optionsContainer = document.getElementById('options-container');
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function fetchQuestions() {
-    const selectedCategory = localStorage.getItem('selectedMix');
+    let selectedCategory = localStorage.getItem('selectedMix'); 
     console.log("Selected category from localStorage:", selectedCategory);
 
     if (!selectedCategory) {
@@ -34,36 +34,58 @@ async function fetchQuestions() {
         return;
     }
 
-    let tableName = '';
-    if (selectedCategory === 'armMix' || selectedCategory === 'armenian') {
-        tableName = 'armMix';  
-    } else if (selectedCategory === 'rusMix' || selectedCategory === 'russian') {
-        tableName = 'rusMix';  
-    } else if (selectedCategory === 'engMix' || selectedCategory === 'english') {
-        tableName = 'engMix'; 
+    let allQuestions = [];
+
+    const categoryMapping = {
+        armenian: 'armMix',
+        russian: 'rusMix',
+        english: 'engMix',
+        mix: 'mix'
+    };
+
+    selectedCategory = categoryMapping[selectedCategory];
+
+    if (!selectedCategory) {
+        console.error("Invalid category selected.");
+        return;
+    }
+
+    if (selectedCategory === 'mix') {
+        const tableNames = ['armMix', 'rusMix', 'engMix'];
+        for (let table of tableNames) {
+            const { data, error } = await supabase
+                .from(table)
+                .select('id, fileUrl, options, correctAnswer');
+
+            if (error) {
+                console.error(`Error fetching questions from ${table}:`, error.message);
+            } else {
+                allQuestions = allQuestions.concat(data); 
+            }
+        }
+    } else if (['armMix', 'rusMix', 'engMix'].includes(selectedCategory)) {
+        const { data, error } = await supabase
+            .from(selectedCategory)  
+            .select('id, fileUrl, options, correctAnswer');
+
+        if (error) {
+            console.error(`Error fetching questions from ${selectedCategory}:`, error.message);
+        } else {
+            allQuestions = data;  
+        }
     } else {
         console.error("Invalid category selected.");
         return;
     }
 
-    const { data, error } = await supabase
-        .from(tableName)
-        .select('id, fileUrl, options, correctAnswer');
-
-    if (error) {
-        console.error("Error fetching questions:", error.message);
-        return;
-    }
-
-    console.log("Fetched data:", data);  
-
-    if (data && data.length > 0) {
-        questions = data;
-        loadQuestion();
+    if (allQuestions.length > 0) {
+        questions = allQuestions; 
+        loadQuestion();  
     } else {
-        console.warn("No questions found in the database for category:", selectedCategory);
+        console.warn(`No questions found in ${selectedCategory}.`);
     }
 }
+
 
 
 function loadQuestion() {
@@ -77,7 +99,7 @@ function loadQuestion() {
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
     stopTimer(); 
-    answered = false; 
+    answered = false;
 
     mediaContainer.innerHTML = `
         <video id="video-player" controls autoplay>
@@ -89,9 +111,9 @@ function loadQuestion() {
     let options = question.options;
 
     if (typeof options === 'string') {
-        options = options.split(',').map(option => option.trim());
+        options = options.split(',').map(option => option.trim()); 
     } else if (typeof options === 'object' && !Array.isArray(options)) {
-        options = Object.values(options); 
+        options = Object.values(options);  
     }
 
     console.log("Processed options array:", options);
@@ -110,33 +132,32 @@ function loadQuestion() {
 
     const videoElement = document.getElementById('video-player');
     videoElement.onended = () => {
-        if (!isTimerRunning && !answered) {  
+        if (!isTimerRunning && !answered) { 
             startTimer();
         }
     };
 }
 
 function checkAnswer(selected, correct) {
-    if (answered) return; 
+    if (answered) return;
 
     answered = true; 
 
     console.log("Selected answer:", selected);
     console.log("Correct answer:", correct);
 
-    const selectedTrimmed = selected.trim().toLowerCase();
-    const correctTrimmed = correct.trim().toLowerCase();
+    const normalizedSelected = selected.trim().toLowerCase(); 
+    const normalizedCorrect = correct.trim().toLowerCase();
 
-    if (selectedTrimmed === correctTrimmed) {
+    if (normalizedSelected === normalizedCorrect) {
         alert("✅ Correct!");
     } else {
         alert("❌ Wrong!");
     }
 
     stopTimer(); 
-    nextQuestion();
+    nextQuestion(); 
 }
-
 
 function startTimer() {
     if (isTimerRunning || timeLeft <= 0) return;
@@ -163,11 +184,11 @@ function stopTimer() {
 }
 
 function updateTimerBar() {
-    timerBar.style.width = (timeLeft / 60) * 100 + "%";  
+    timerBar.style.width = (timeLeft / 60) * 100 + "%"; 
 }
 
 function updateCountdownText() {
-    countdownText.textContent = `${timeLeft}s`; 
+    countdownText.textContent = `${timeLeft}s`;  
 }
 
 function nextQuestion() {
