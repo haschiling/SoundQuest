@@ -4,19 +4,21 @@ const SUPABASE_URL = "https://gbpcccwimpsnvopjyxes.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let optionsContainer, mediaContainer, countdownText, timerBar;
+let optionsContainer, mediaContainer, countdownText, timerBar, scoreText;
 let questions = [];
-let currentQuestionIndex = 0;
+let answeredQuestions = []; 
+let score = 0;  
 let timerInterval;
-let timeLeft = 60; 
+let timeLeft = 60;
 let isTimerRunning = false;
-let answered = false; 
+let answered = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     optionsContainer = document.getElementById('options-container');
     mediaContainer = document.getElementById('media-container');
     timerBar = document.getElementById('timer-bar');
     countdownText = document.getElementById('countdown-text');
+    scoreText = document.getElementById('score-text');  
 
     document.querySelector('.close-btn').addEventListener('click', () => {
         window.location.href = 'category.html';  
@@ -80,28 +82,31 @@ async function fetchQuestions() {
 
     if (allQuestions.length > 0) {
         questions = allQuestions; 
-        loadQuestion();  
+        loadRandomQuestion();  
     } else {
         console.warn(`No questions found in ${selectedCategory}.`);
     }
 }
 
 
-
-function loadQuestion() {
+function loadRandomQuestion() {
     if (questions.length === 0) return;
 
-    const question = questions[currentQuestionIndex];
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * questions.length);  
+    } while (answeredQuestions.includes(randomIndex)); 
 
-    console.log("Type of question.options:", typeof question.options);
-    console.log("question.options:", question.options);
+    const question = questions[randomIndex];
+    answeredQuestions.push(randomIndex); 
+
 
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
     stopTimer(); 
     answered = false;
 
-    mediaContainer.innerHTML = `
+    mediaContainer.innerHTML = ` 
         <video id="video-player" controls autoplay>
             <source src="${question.fileUrl}?t=${Date.now()}" type="video/mp4">
             Your browser does not support the video tag.
@@ -111,9 +116,9 @@ function loadQuestion() {
     let options = question.options;
 
     if (typeof options === 'string') {
-        options = options.split(',').map(option => option.trim()); 
+        options = options.split(',').map(option => option.trim());
     } else if (typeof options === 'object' && !Array.isArray(options)) {
-        options = Object.values(options);  
+        options = Object.values(options);
     }
 
     console.log("Processed options array:", options);
@@ -132,7 +137,7 @@ function loadQuestion() {
 
     const videoElement = document.getElementById('video-player');
     videoElement.onended = () => {
-        if (!isTimerRunning && !answered) { 
+        if (!isTimerRunning && !answered) {
             startTimer();
         }
     };
@@ -150,13 +155,16 @@ function checkAnswer(selected, correct) {
     const normalizedCorrect = correct.trim().toLowerCase();
 
     if (normalizedSelected === normalizedCorrect) {
-        alert("✅ Correct!");
-    } else {
-        alert("❌ Wrong!");
+        score++; 
     }
 
+    updateScore(); 
     stopTimer(); 
     nextQuestion(); 
+}
+
+function updateScore() {
+    scoreText.textContent = `Score: ${score}`;
 }
 
 function startTimer() {
@@ -173,7 +181,7 @@ function startTimer() {
 
         if (timeLeft <= 0) {
             stopTimer();
-            nextQuestion();  
+            openEndPage();  
         }
     }, 1000);
 }
@@ -181,6 +189,10 @@ function startTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
     isTimerRunning = false;
+}
+
+function openEndPage() {
+    window.location.href ='endgame.html';  
 }
 
 function updateTimerBar() {
@@ -192,6 +204,6 @@ function updateCountdownText() {
 }
 
 function nextQuestion() {
-    currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
-    loadQuestion();
+    timeLeft = 60;
+    loadRandomQuestion(); 
 }
