@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <link rel="stylesheet" href="aliassp.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Close Button -->
+        <button class="close-btn" onclick="goBack()">✖</button>
+        
+        <!-- Timer and Score Section -->
+        <div class="top-section">
+            <div class="timer" id="timer">00:30</div>
+            <div class="score">Միավորներ: <span id="score">0</span></div>
+        </div>
+
+        <!-- Media Player (Video or Audio) -->
+        <div class="media-container">
+            <video id="videoClip" controls>
+                <source src="video.mp4" type="video/mp4">
+                Ձեր զննարկիչը չի աջակցում տեսանյութին։
+            </video>
+            <!-- Uncomment for audio instead of video -->
+            <!-- <audio id="audioClip" controls>
+                <source src="audio.mp3" type="audio/mpeg">
+                Ձեր զննարկիչը չի աջակցում աուդիոյին։
+            </audio> -->
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button class="btn skip" onclick="skipQuestion()">Ցատկել</button>
+            <button class="btn next" onclick="nextQuestion()">Հաջորդ</button>
+        </div>
+    </div>
+
+    <script src="aliasp.js"></script>
+</body>
+</html>

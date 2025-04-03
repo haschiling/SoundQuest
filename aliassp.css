@@ -1,0 +1,116 @@
+/* Adjusted close button positioning */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px;  /* Moved the close button slightly to the right */
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Increased space between timer and media */
+.timer {
+    margin-bottom: 30px; /* More gap between timer and media */
+    animation: timerBlink 1s infinite; /* Blinking animation */
+    background-color: #A79BFF;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 20px;
+    color: white;
+}
+
+/* More space between media and score */
+.media-container {
+    margin-bottom: 50px; /* Increased space for a cleaner look */
+    background-color: #2C2A5A;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Added space between media and score */
+.score {
+    margin-top: 20px; /* Added more space between the clip and score */
+    color: white;
+    font-size: 22px; /* Increased font size for desktop */
+}
+
+/* More space between media and buttons */
+.buttons {
+    margin-top: 40px; /* Added space between media and buttons */
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Timer animation */
+@keyframes timerBlink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ECECEC;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.game-container {
+    background-color: #3F3D77;
+    padding: 40px; /* Increased padding for larger interface */
+    border-radius: 10px;
+    width: 80%; /* Made the container wider for desktop */
+    max-width: 800px; /* Increased max-width for desktop */
+    text-align: center;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 20px; /* Moved the close button slightly to the right */
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+}
+
+.media-container video, .media-container audio {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.buttons .btn {
+    padding: 15px 30px; /* Increased padding for larger buttons */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px; /* Increased font size for desktop */
+    font-weight: bold;
+    width: 40%;
+}
+
+.next {
+    background-color: #A79BFF;
+    color: white;
+}
+
+.skip {
+    background-color: #C4B3FF;
+    color: white;
+}
+
+.score {
+    margin-top: 20px; /* Increased space for a cleaner layout */
+    color: white;
+    font-size: 22px; /* Increased font size for desktop */
+}
