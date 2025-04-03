@@ -6,8 +6,8 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let optionsContainer, mediaContainer, countdownText, timerBar, scoreText;
 let questions = [];
-let answeredQuestions = [];
-let score = 0;
+let answeredQuestions = []; 
+let score = 0;  
 let timerInterval;
 let timeLeft = 60;
 let isTimerRunning = false;
@@ -18,20 +18,17 @@ document.addEventListener("DOMContentLoaded", () => {
     mediaContainer = document.getElementById('media-container');
     timerBar = document.getElementById('timer-bar');
     countdownText = document.getElementById('countdown-text');
-    scoreText = document.getElementById('score-text');
+    scoreText = document.getElementById('score-text');  
 
-    // Close button to navigate to the category selection page
     document.querySelector('.close-btn').addEventListener('click', () => {
-        window.location.href = 'category.html';
+        window.location.href = 'category.html';  
     });
 
-    // Fetch questions from Supabase
     fetchQuestions();
 });
 
-// Fetch questions from the selected category in Supabase
 async function fetchQuestions() {
-    let selectedCategory = localStorage.getItem('selectedMix');  // Retrieve selected category from localStorage
+    let selectedCategory = localStorage.getItem('selectedMix'); 
     console.log("Selected category from localStorage:", selectedCategory);
 
     if (!selectedCategory) {
@@ -41,7 +38,6 @@ async function fetchQuestions() {
 
     let allQuestions = [];
 
-    // Mapping categories to Supabase table names
     const categoryMapping = {
         armenian: 'armMix',
         russian: 'rusMix',
@@ -66,18 +62,18 @@ async function fetchQuestions() {
             if (error) {
                 console.error(`Error fetching questions from ${table}:`, error.message);
             } else {
-                allQuestions = allQuestions.concat(data);  // Concatenate all questions from different categories
+                allQuestions = allQuestions.concat(data); 
             }
         }
     } else if (['armMix', 'rusMix', 'engMix'].includes(selectedCategory)) {
         const { data, error } = await supabase
-            .from(selectedCategory)  // Get questions from the selected category
+            .from(selectedCategory)  
             .select('id, fileUrl, options, correctAnswer');
 
         if (error) {
             console.error(`Error fetching questions from ${selectedCategory}:`, error.message);
         } else {
-            allQuestions = data;  // Store fetched questions
+            allQuestions = data;  
         }
     } else {
         console.error("Invalid category selected.");
@@ -85,35 +81,31 @@ async function fetchQuestions() {
     }
 
     if (allQuestions.length > 0) {
-        // Update the questions with the public video URL
-        questions = allQuestions.map(question => ({
-            ...question,
-            fileUrl: question.fileUrl.replace('storage/v1/object/public/', 'https://gbpcccwimpsnvopjyxes.supabase.co/storage/v1/object/public/')
-        }));
-        loadRandomQuestion();  // Load a random question
+        questions = allQuestions; 
+        loadRandomQuestion();  
     } else {
         console.warn(`No questions found in ${selectedCategory}.`);
     }
 }
 
-// Load a random question and display the video and options
+
 function loadRandomQuestion() {
     if (questions.length === 0) return;
 
     let randomIndex;
     do {
-        randomIndex = Math.floor(Math.random() * questions.length);  // Randomly select a question
-    } while (answeredQuestions.includes(randomIndex));  // Ensure the same question isn't selected again
+        randomIndex = Math.floor(Math.random() * questions.length);  
+    } while (answeredQuestions.includes(randomIndex)); 
 
     const question = questions[randomIndex];
-    answeredQuestions.push(randomIndex);  // Keep track of answered questions
+    answeredQuestions.push(randomIndex); 
+
 
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
     stopTimer(); 
     answered = false;
 
-    // Display the video player with the question's video URL
     mediaContainer.innerHTML = ` 
         <video id="video-player" controls autoplay>
             <source src="${question.fileUrl}?t=${Date.now()}" type="video/mp4">
@@ -131,13 +123,12 @@ function loadRandomQuestion() {
 
     console.log("Processed options array:", options);
 
-    // Display the options as buttons
     if (Array.isArray(options)) {
         options.forEach(option => {
             const button = document.createElement('button');
             button.classList.add('option');
             button.textContent = option;
-            button.onclick = () => checkAnswer(option, question.correctAnswer);  // Check the selected answer
+            button.onclick = () => checkAnswer(option, question.correctAnswer);
             optionsContainer.appendChild(button);
         });
     } else {
@@ -147,79 +138,72 @@ function loadRandomQuestion() {
     const videoElement = document.getElementById('video-player');
     videoElement.onended = () => {
         if (!isTimerRunning && !answered) {
-            startTimer();  // Start the timer when the video ends
+            startTimer();
         }
     };
 }
 
-// Check the selected answer and update score
 function checkAnswer(selected, correct) {
-    if (answered) return;  // Prevent multiple answers
+    if (answered) return;
 
-    answered = true;  // Mark as answered
+    answered = true; 
+
     console.log("Selected answer:", selected);
     console.log("Correct answer:", correct);
 
-    const normalizedSelected = selected.trim().toLowerCase();  // Normalize the selected answer
-    const normalizedCorrect = correct.trim().toLowerCase();  // Normalize the correct answer
+    const normalizedSelected = selected.trim().toLowerCase(); 
+    const normalizedCorrect = correct.trim().toLowerCase();
 
     if (normalizedSelected === normalizedCorrect) {
-        score++;  // Increment score for correct answer
+        score++; 
     }
 
-    updateScore();  // Update the score
-    stopTimer();  // Stop the timer
-    nextQuestion();  // Load the next question
+    updateScore(); 
+    stopTimer(); 
+    nextQuestion(); 
 }
 
-// Update the score on the screen
 function updateScore() {
-    scoreText.textContent = `Score: ${score}`;  // Update the score display
+    scoreText.textContent = `Score: ${score}`;
 }
 
-// Start the timer when the video starts
 function startTimer() {
     if (isTimerRunning || timeLeft <= 0) return;
 
     isTimerRunning = true;
-    updateTimerBar();  // Update the timer bar
-    updateCountdownText();  // Update the countdown text
+    updateTimerBar();
+    updateCountdownText();
 
     timerInterval = setInterval(() => {
-        timeLeft--;  // Decrease time left by 1 second
-        updateTimerBar();  // Update the timer bar
-        updateCountdownText();  // Update the countdown text
+        timeLeft--; 
+        updateTimerBar();
+        updateCountdownText();
 
         if (timeLeft <= 0) {
             stopTimer();
-            openEndPage();  // End the game when time is up
+            openEndPage();  
         }
     }, 1000);
 }
 
-// Stop the timer
 function stopTimer() {
-    clearInterval(timerInterval);  // Clear the timer interval
+    clearInterval(timerInterval);
     isTimerRunning = false;
 }
 
-// Open the end game page
 function openEndPage() {
-    window.location.href = 'endgame.html';  // Redirect to the end game page
+    window.location.href ='endgame.html';  
 }
 
-// Update the timer bar width
 function updateTimerBar() {
-    timerBar.style.width = (timeLeft / 60) * 100 + "%";  // Update the timer bar width
+    timerBar.style.width = (timeLeft / 60) * 100 + "%"; 
 }
 
-// Update the countdown text
 function updateCountdownText() {
-    countdownText.textContent = `${timeLeft}s`;  // Update the countdown text
+    countdownText.textContent = `${timeLeft}s`;  
 }
 
-// Load the next question
 function nextQuestion() {
-    timeLeft = 60;  // Reset the timer
-    loadRandomQuestion();  // Load the next random question
+    timeLeft = 60;
+    loadRandomQuestion(); 
 }
