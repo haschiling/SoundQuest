@@ -4,26 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SoundQuest Results</title>
-    <link rel="stylesheet" href="endga.css">
+    <link rel="stylesheet" href="endga.css"> <!-- Link to your CSS file -->
 </head>
 <body>
     <div class="result-board">
-        <div class="game-mode">Կատեգորիայի անվանում</div>
+        <!-- Displaying the category name -->
+        <div class="game-mode">Կատեգորիայի անվանում</div> <!-- Category Name Placeholder -->
+
+        <!-- Displaying the score and message -->
         <div class="score-box">
             <span>Դուք գուշակել եք</span>
-            <span id="score">4</span>
+            <span id="score">0</span> <!-- The score will be dynamically updated here -->
             <span>երգ!</span>
         </div>
+
+        <!-- Displaying the list of songs with correct/wrong answers -->
         <div class="song-list" id="song-list">
-            <!-- Songs will be dynamically added here -->
+            <!-- Songs will be dynamically added here using JavaScript -->
         </div>
+
+        <!-- Button container for replaying or ending the game -->
         <div class="button-container">
-            <button onclick="repeatGame()">Նորից ?</button>
-            <button onclick="endGame()">Ավարտել</button>
+            <button onclick="repeatGame()">Նորից ?</button> <!-- Replay button -->
+            <button onclick="endGame()">Ավարտել</button> <!-- End button -->
         </div>
     </div>
-   
-    
-    <script src="endgamee.js"></script>
+
+    <script src="endgamee.js"></script> <!-- Link to your JavaScript file -->
 </body>
 </html>

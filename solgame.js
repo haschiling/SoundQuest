@@ -6,12 +6,13 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let optionsContainer, mediaContainer, countdownText, timerBar, scoreText;
 let questions = [];
-let answeredQuestions = []; 
-let score = 0;  
+let answeredQuestions = [];
+let score = 0;
 let timerInterval;
-let timeLeft = 60;
+let timeLeft = 60;  // Initialize with a default time (will be overridden)
 let isTimerRunning = false;
 let answered = false;
+let videoElement;  // Declare the video element globally
 
 document.addEventListener("DOMContentLoaded", () => {
     optionsContainer = document.getElementById('options-container');
@@ -88,7 +89,6 @@ async function fetchQuestions() {
     }
 }
 
-
 function loadRandomQuestion() {
     if (questions.length === 0) return;
 
@@ -100,18 +100,26 @@ function loadRandomQuestion() {
     const question = questions[randomIndex];
     answeredQuestions.push(randomIndex); 
 
-
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
-    stopTimer(); 
     answered = false;
 
     mediaContainer.innerHTML = ` 
-        <video id="video-player" controls autoplay>
+        <video id="video-player" controls>
             <source src="${question.fileUrl}?t=${Date.now()}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     `;
+
+    videoElement = document.getElementById('video-player'); // Initialize video element
+
+    // Timer should start after the video ends
+    videoElement.onended = () => {
+        if (!answered) {
+            // When video ends, continue the timer from the last timeLeft value
+            startTimer();
+        }
+    };
 
     let options = question.options;
 
@@ -134,13 +142,6 @@ function loadRandomQuestion() {
     } else {
         console.error("Options is not an array. Please check the data format.");
     }
-
-    const videoElement = document.getElementById('video-player');
-    videoElement.onended = () => {
-        if (!isTimerRunning && !answered) {
-            startTimer();
-        }
-    };
 }
 
 function checkAnswer(selected, correct) {
@@ -192,7 +193,7 @@ function stopTimer() {
 }
 
 function openEndPage() {
-    window.location.href ='endgame.html';  
+    window.location.href = 'endgame.html';  
 }
 
 function updateTimerBar() {
@@ -204,6 +205,6 @@ function updateCountdownText() {
 }
 
 function nextQuestion() {
-    timeLeft = 60;
+    // Retain the timeLeft value from the previous question.
     loadRandomQuestion(); 
 }
