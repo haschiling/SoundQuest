@@ -9,27 +9,34 @@ let questions = [];
 let answeredQuestions = [];
 let score = 0;
 let timerInterval;
-let timeLeft = 60;  // Initialize with a default time (will be overridden)
+let timeLeft = 60;
 let isTimerRunning = false;
 let answered = false;
-let videoElement;  // Declare the video element globally
+let videoElement;
+let songResults = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     optionsContainer = document.getElementById('options-container');
     mediaContainer = document.getElementById('media-container');
     timerBar = document.getElementById('timer-bar');
     countdownText = document.getElementById('countdown-text');
-    scoreText = document.getElementById('score-text');  
+    scoreText = document.getElementById('score');
+
+    // Reset score when game starts
+    localStorage.removeItem('score');
+    localStorage.removeItem('songResults');
+    score = 0;
+    updateScore();
 
     document.querySelector('.close-btn').addEventListener('click', () => {
-        window.location.href = 'category.html';  
+        window.location.href = 'category.html';
     });
 
     fetchQuestions();
 });
 
 async function fetchQuestions() {
-    let selectedCategory = localStorage.getItem('selectedMix'); 
+    let selectedCategory = localStorage.getItem('selectedMix');
     console.log("Selected category from localStorage:", selectedCategory);
 
     if (!selectedCategory) {
@@ -63,18 +70,18 @@ async function fetchQuestions() {
             if (error) {
                 console.error(`Error fetching questions from ${table}:`, error.message);
             } else {
-                allQuestions = allQuestions.concat(data); 
+                allQuestions = allQuestions.concat(data);
             }
         }
     } else if (['armMix', 'rusMix', 'engMix'].includes(selectedCategory)) {
         const { data, error } = await supabase
-            .from(selectedCategory)  
+            .from(selectedCategory)
             .select('id, fileUrl, options, correctAnswer');
 
         if (error) {
             console.error(`Error fetching questions from ${selectedCategory}:`, error.message);
         } else {
-            allQuestions = data;  
+            allQuestions = data;
         }
     } else {
         console.error("Invalid category selected.");
@@ -82,8 +89,8 @@ async function fetchQuestions() {
     }
 
     if (allQuestions.length > 0) {
-        questions = allQuestions; 
-        loadRandomQuestion();  
+        questions = allQuestions;
+        loadRandomQuestion();
     } else {
         console.warn(`No questions found in ${selectedCategory}.`);
     }
@@ -94,29 +101,27 @@ function loadRandomQuestion() {
 
     let randomIndex;
     do {
-        randomIndex = Math.floor(Math.random() * questions.length);  
-    } while (answeredQuestions.includes(randomIndex)); 
+        randomIndex = Math.floor(Math.random() * questions.length);
+    } while (answeredQuestions.includes(randomIndex));
 
     const question = questions[randomIndex];
-    answeredQuestions.push(randomIndex); 
+    answeredQuestions.push(randomIndex);
 
     mediaContainer.innerHTML = '';
     optionsContainer.innerHTML = '';
     answered = false;
 
-    mediaContainer.innerHTML = ` 
-        <video id="video-player" controls>
+    mediaContainer.innerHTML = `
+        <video id="video-player" controls autoplay muted>
             <source src="${question.fileUrl}?t=${Date.now()}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     `;
 
-    videoElement = document.getElementById('video-player'); // Initialize video element
+    videoElement = document.getElementById('video-player');
 
-    // Timer should start after the video ends
     videoElement.onended = () => {
         if (!answered) {
-            // When video ends, continue the timer from the last timeLeft value
             startTimer();
         }
     };
@@ -136,7 +141,7 @@ function loadRandomQuestion() {
             const button = document.createElement('button');
             button.classList.add('option');
             button.textContent = option;
-            button.onclick = () => checkAnswer(option, question.correctAnswer);
+            button.onclick = () => checkAnswer(option, question.correctAnswer, question.fileUrl);
             optionsContainer.appendChild(button);
         });
     } else {
@@ -147,25 +152,35 @@ function loadRandomQuestion() {
 function checkAnswer(selected, correct) {
     if (answered) return;
 
-    answered = true; 
+    answered = true;
 
-    console.log("Selected answer:", selected);
-    console.log("Correct answer:", correct);
-
-    const normalizedSelected = selected.trim().toLowerCase(); 
+    const normalizedSelected = selected.trim().toLowerCase();
     const normalizedCorrect = correct.trim().toLowerCase();
 
-    if (normalizedSelected === normalizedCorrect) {
-        score++; 
+    const isCorrect = normalizedSelected === normalizedCorrect;
+
+    if (isCorrect) {
+        score++;
     }
 
-    updateScore(); 
-    stopTimer(); 
-    nextQuestion(); 
+    songResults.push({
+        title: correct,
+        correct: isCorrect
+    });
+
+    localStorage.setItem("songResults", JSON.stringify(songResults));
+
+    console.log("Saved song result:", songResults);
+
+    updateScore();
+    stopTimer();
+    nextQuestion();
 }
 
 function updateScore() {
-    scoreText.textContent = `Score: ${score}`;
+    if (scoreText) {
+        scoreText.textContent = `Հաշիվ: ${score}`;
+    }
 }
 
 function startTimer() {
@@ -176,13 +191,13 @@ function startTimer() {
     updateCountdownText();
 
     timerInterval = setInterval(() => {
-        timeLeft--; 
+        timeLeft--;
         updateTimerBar();
         updateCountdownText();
 
         if (timeLeft <= 0) {
             stopTimer();
-            openEndPage();  
+            openEndPage();
         }
     }, 1000);
 }
@@ -193,18 +208,19 @@ function stopTimer() {
 }
 
 function openEndPage() {
-    window.location.href = 'endgame.html';  
+    localStorage.setItem('score', score);
+    localStorage.setItem('songResults', JSON.stringify(songResults));
+    window.location.href = 'endgame.html';
 }
 
 function updateTimerBar() {
-    timerBar.style.width = (timeLeft / 60) * 100 + "%"; 
+    timerBar.style.width = (timeLeft / 60) * 100 + "%";
 }
 
 function updateCountdownText() {
-    countdownText.textContent = `${timeLeft}s`;  
+    countdownText.textContent = `${timeLeft}s`;
 }
 
 function nextQuestion() {
-    // Retain the timeLeft value from the previous question.
-    loadRandomQuestion(); 
+    loadRandomQuestion();
 }

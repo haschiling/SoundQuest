@@ -24,18 +24,23 @@ body, html {
     font-size: 18px;
 }
 
+
 .score-box {
     background-color: #7D89D0;
     padding: 10px 20px;
     border-radius: 20px;
-    font-size: 22px;
+    font-size: 24px;
     margin-bottom: 15px;
     display: flex;
-    gap: 5px;
     align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: bold;
+    text-align: center;
 }
 
 #score {
+    margin: 0 8px;
     font-size: 28px;
     font-weight: bold;
 }
@@ -49,8 +54,9 @@ body, html {
 }
 
 .song-item {
-    font-size: 20px;
-    margin: 5px 0;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
 }
 
 .song-item.correct {

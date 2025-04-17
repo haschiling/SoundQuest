@@ -1,60 +1,62 @@
-// Function to get the game results (song titles and whether they were guessed correctly)
-function getGameResults() {
-    return [
-        { title: "See You Again - Wiz Khalifa ft. Charlie Puth", correct: true },
-        { title: "Cars Outside - James Arthur", correct: true },
-        { title: "Easy On Me - Adele", correct: false },
-        { title: "Until I Found You - Stephen Sanchez", correct: true },
-        { title: "Lovely - Billie Eilish & Khalid", correct: false },
-        { title: "Blinding Lights - The Weeknd", correct: true },
-    ];
-}
-
-// Function to display results, including score and song list
-function displayResults() {
-    const songList = getGameResults();  // Get all the game results
-    const songListContainer = document.getElementById("song-list");
-
-    // Calculate score based on the number of correct answers
-    const score = songList.filter(song => song.correct).length;
-
-    // Debugging: Log the score to the console to check the calculation
-    console.log("Calculated score:", score);
-
-    // Update the score in the HTML
+document.addEventListener("DOMContentLoaded", () => {
     const scoreElement = document.getElementById("score");
-    scoreElement.textContent = score;  // Dynamically update the score element with the calculated score
+    const songListContainer = document.getElementById("song-list");
+    const categoryTitle = document.getElementById("category-title");
 
-    // Clear previous song list before rendering the new one
-    songListContainer.innerHTML = '';
 
-    // Loop through the song list and display each song along with its status (correct/incorrect)
+    const score = localStorage.getItem("score");
+    scoreElement.textContent = score ? ` ${score} ` : "Հաշիվ: 0";
+
+
+    const selectedMix = localStorage.getItem("selectedMix");
+    const categoryNames = {
+        armenian: "Հայկական",
+        russian: "Ռուսական",
+        english: "Անգլերեն",
+        mix: "Խառը"
+    };
+    if (categoryTitle) {
+        categoryTitle.textContent = selectedMix && categoryNames[selectedMix]
+            ? `Կատեգորիա՝ ${categoryNames[selectedMix]}`
+            : "Կատեգորիա չընտրված է";
+    }
+
+
+    const songList = getGameResults();
+
+    if (songList.length === 0) {
+        songListContainer.textContent = "Խաղի արդյունքները չեն գտնվել։";
+        return;
+    }
+
+
+    songListContainer.innerHTML = "";
     songList.forEach(song => {
-        const songItem = document.createElement("div");
-        songItem.classList.add("song-item");
-        songItem.textContent = song.title;
-
-        // Add class based on whether the answer was correct or wrong
-        if (song.correct) {
-            songItem.classList.add("correct");
-        } else {
-            songItem.classList.add("wrong");
-        }
-
-        // Append the song item to the song list container
-        songListContainer.appendChild(songItem);
+        const div = document.createElement("div");
+        div.textContent = song.title;
+        div.style.color = song.correct ? "white" : "#585555";
+        div.classList.add("song-item");
+        songListContainer.appendChild(div);
     });
+});
+
+function getGameResults() {
+    try {
+        const stored = localStorage.getItem("songResults");
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        console.error("Error loading song results:", e);
+        return [];
+    }
 }
 
-// Function to restart the game (reload the page)
 function repeatGame() {
-    location.reload(); // Reloads the page to restart the game
+    location.reload();
 }
 
-// Function to end the game (redirects to the start page)
-function endGame() {
-    window.location.href = "file:///C:/Users/elizn/Downloads/start%20(1).html"; // Update this with the correct URL
+function resetGame() {
+    localStorage.removeItem("score");
+    localStorage.removeItem("songResults");
+    localStorage.removeItem("selectedMix");
+    window.location.href = "start.html";
 }
-
-// Call the displayResults function to render the results on page load
-displayResults();
