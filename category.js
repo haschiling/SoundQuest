@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
               alert('Խնդրում ենք ընտրել երաժշտական ոճ և կատեգորիա');
           } else {
               if (mode === 'group') {
-                  console.log('Redirecting to aliiasp.html');
-                  window.location.href = "aliiasp.html"; 
+                  console.log('Redirecting to alias.html');
+                  window.location.href = "alias.html"; 
               } else if (mode === 'solo') {
                   console.log('Redirecting to sologame.html');
                   window.location.href = "sologame.html"; 

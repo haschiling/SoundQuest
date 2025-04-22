@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     countdownText = document.getElementById('countdown-text');
     scoreText = document.getElementById('score');
 
-    // Reset score when game starts
+    // Reset score and results
     localStorage.removeItem('score');
     localStorage.removeItem('songResults');
     score = 0;
@@ -37,10 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function fetchQuestions() {
     let selectedCategory = localStorage.getItem('selectedMix');
-    console.log("Selected category from localStorage:", selectedCategory);
-
     if (!selectedCategory) {
-        console.error("No category selected. Please select a category first.");
+        console.error("No category selected.");
         return;
     }
 
@@ -54,45 +52,35 @@ async function fetchQuestions() {
     };
 
     selectedCategory = categoryMapping[selectedCategory];
-
     if (!selectedCategory) {
-        console.error("Invalid category selected.");
+        console.error("Invalid category.");
         return;
     }
 
     if (selectedCategory === 'mix') {
-        const tableNames = ['armMix', 'rusMix', 'engMix'];
-        for (let table of tableNames) {
-            const { data, error } = await supabase
-                .from(table)
-                .select('id, fileUrl, options, correctAnswer');
-
+        const tables = ['armMix', 'rusMix', 'engMix'];
+        for (let table of tables) {
+            const { data, error } = await supabase.from(table).select('id, fileUrl, options, correctAnswer');
             if (error) {
-                console.error(`Error fetching questions from ${table}:`, error.message);
+                console.error(`Error from ${table}:`, error.message);
             } else {
                 allQuestions = allQuestions.concat(data);
             }
         }
-    } else if (['armMix', 'rusMix', 'engMix'].includes(selectedCategory)) {
-        const { data, error } = await supabase
-            .from(selectedCategory)
-            .select('id, fileUrl, options, correctAnswer');
-
+    } else {
+        const { data, error } = await supabase.from(selectedCategory).select('id, fileUrl, options, correctAnswer');
         if (error) {
-            console.error(`Error fetching questions from ${selectedCategory}:`, error.message);
+            console.error(`Error fetching from ${selectedCategory}:`, error.message);
         } else {
             allQuestions = data;
         }
-    } else {
-        console.error("Invalid category selected.");
-        return;
     }
 
     if (allQuestions.length > 0) {
         questions = allQuestions;
         loadRandomQuestion();
     } else {
-        console.warn(`No questions found in ${selectedCategory}.`);
+        console.warn(`No questions found in ${selectedCategory}`);
     }
 }
 
@@ -102,7 +90,7 @@ function loadRandomQuestion() {
     let randomIndex;
     do {
         randomIndex = Math.floor(Math.random() * questions.length);
-    } while (answeredQuestions.includes(randomIndex));
+    } while (answeredQuestions.includes(randomIndex) && answeredQuestions.length < questions.length);
 
     const question = questions[randomIndex];
     answeredQuestions.push(randomIndex);
@@ -120,44 +108,38 @@ function loadRandomQuestion() {
 
     videoElement = document.getElementById('video-player');
 
-    videoElement.onended = () => {
-        if (!answered) {
+
+    videoElement.onplay = () => {
+        if (!isTimerRunning) {
             startTimer();
         }
     };
 
     let options = question.options;
-
     if (typeof options === 'string') {
-        options = options.split(',').map(option => option.trim());
+        options = options.split(',').map(o => o.trim());
     } else if (typeof options === 'object' && !Array.isArray(options)) {
         options = Object.values(options);
     }
-
-    console.log("Processed options array:", options);
 
     if (Array.isArray(options)) {
         options.forEach(option => {
             const button = document.createElement('button');
             button.classList.add('option');
             button.textContent = option;
-            button.onclick = () => checkAnswer(option, question.correctAnswer, question.fileUrl);
+            button.onclick = () => checkAnswer(option, question.correctAnswer);
             optionsContainer.appendChild(button);
         });
     } else {
-        console.error("Options is not an array. Please check the data format.");
+        console.error("Invalid options format.");
     }
 }
 
 function checkAnswer(selected, correct) {
     if (answered) return;
-
     answered = true;
 
-    const normalizedSelected = selected.trim().toLowerCase();
-    const normalizedCorrect = correct.trim().toLowerCase();
-
-    const isCorrect = normalizedSelected === normalizedCorrect;
+    const isCorrect = selected.trim().toLowerCase() === correct.trim().toLowerCase();
 
     if (isCorrect) {
         score++;
@@ -169,13 +151,24 @@ function checkAnswer(selected, correct) {
     });
 
     localStorage.setItem("songResults", JSON.stringify(songResults));
-
-    console.log("Saved song result:", songResults);
-
     updateScore();
-    stopTimer();
-    nextQuestion();
+
+    // Style the options
+    const optionButtons = document.querySelectorAll('.option');
+    optionButtons.forEach(btn => {
+        const optionText = btn.textContent.trim().toLowerCase();
+        if (optionText === correct.trim().toLowerCase()) {
+            btn.style.color = 'white';
+        } else {
+            btn.style.color = '#585555';
+        }
+        btn.disabled = true;
+    });
+
+
+    setTimeout(nextQuestion, 2000);
 }
+
 
 function updateScore() {
     if (scoreText) {
@@ -207,12 +200,6 @@ function stopTimer() {
     isTimerRunning = false;
 }
 
-function openEndPage() {
-    localStorage.setItem('score', score);
-    localStorage.setItem('songResults', JSON.stringify(songResults));
-    window.location.href = 'endgame.html';
-}
-
 function updateTimerBar() {
     timerBar.style.width = (timeLeft / 60) * 100 + "%";
 }
@@ -222,5 +209,15 @@ function updateCountdownText() {
 }
 
 function nextQuestion() {
-    loadRandomQuestion();
+    if (answeredQuestions.length >= questions.length) {
+        openEndPage();
+    } else {
+        loadRandomQuestion();
+    }
+}
+
+function openEndPage() {
+    localStorage.setItem('score', score);
+    localStorage.setItem('songResults', JSON.stringify(songResults));
+    window.location.href = 'endgame.html';
 }

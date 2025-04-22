@@ -1,28 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hy">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ՍաունդՔվեսթ</title>
-    <link rel="stylesheet" href="groupg.css">
+    <link rel="stylesheet" href="groupgame.css">
 </head>
 <body>
     <div class="quiz-container">
         <div class="header">
             <span>Ժամանակ:</span>
             <div class="timer" id="timer-bar"></div>
-            <span class="close-btn">✕</span>
+            <span id="countdown-text">60:00</span>
+            <span class="close-btn" onclick="goBack()">✕</span>
         </div>
+
+        <div id="score">Հաշիվ: 0</div>
+
         <div class="media" id="media-container">
-            <audio id="media" controls autoplay></audio>
+            <video id="media" controls autoplay></video>
         </div>
+
         <div class="buttons">
             <button class="action-btn" id="skip-btn">Skip</button>
             <button class="action-btn" id="guess-btn">Guess</button>
         </div>
-        <div class="score" id="score">Score: 0</div>
+
+        <div class="answer-section">
+            <button class="action-btn" id="answer-btn">Show Answer</button>
+            <div id="answer-text" class="answer-text"></div>
+        </div>
     </div>
 
-    <script src="gamgroup.js"></script>
+    <script src="groupgame.js" type="module"></script>
 </body>
 </html>
