@@ -1,37 +1,49 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ՍաունդՔվեսթ</title>
-    <link rel="stylesheet" href="alias.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ՍաունդՔվեսթ</title>
+  <link rel="stylesheet" href="alias.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="team-names">
-            <div class="team">
-                <label for="team1">Թիմ 1</label>
-                <input type="text" id="team1" placeholder="Անուն..">
-            </div>
-            <div class="team">
-                <label for="team2">Թիմ 2</label>
-                <input type="text" id="team2" placeholder="Անուն..">
-            </div>
-        </div>
-
-        <div class="scoreboard">
-            <div class="score-column" id="team1-scores"></div>
-            <div class="score-column" id="team2-scores"></div>
-        </div>
-
-        <div class="total-scores">
-            <span id="team1-total">0</span>
-            <span id="team2-total">0</span>
-        </div>
-
-        <button onclick="start()">Առաջ</button>
+  <div class="container">
+    <div class="team-names">
+      <div class="team">
+        <label for="team1">Թիմ 1</label>
+        <input type="text" id="team1" placeholder="Անուն.." />
+      </div>
+      <div class="team">
+        <label for="team2">Թիմ 2</label>
+        <input type="text" id="team2" placeholder="Անուն.." />
+      </div>
     </div>
 
-    <script src="alias.js"></script>
+    <div class="scoreboard">
+      <div class="score-column" id="team1-scores">
+        <div id="team1-row-1" class="score-entry"></div>
+        <div id="team1-row-2" class="score-entry"></div>
+        <div id="team1-row-3" class="score-entry"></div>
+        <div id="team1-row-4" class="score-entry"></div>
+        <div id="team1-row-5" class="score-entry"></div>
+      </div>
+      <div class="score-column" id="team2-scores">
+        <div id="team2-row-1" class="score-entry"></div>
+        <div id="team2-row-2" class="score-entry"></div>
+        <div id="team2-row-3" class="score-entry"></div>
+        <div id="team2-row-4" class="score-entry"></div>
+        <div id="team2-row-5" class="score-entry"></div>
+      </div>
+    </div>
+
+    <div class="total-scores">
+      <span id="team1-total">0</span>
+      <span id="team2-total">0</span>
+    </div>
+
+    <button onclick="start()">Առաջ</button>
+  </div>
+
+  <script src="alias.js"></script>
 </body>
 </html>

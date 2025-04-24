@@ -59,6 +59,15 @@ input[type="text"] {
     margin: 5px 0;
     font-size: 20px;
 }
+.score-entry {
+    height: 40px; /* Ensures visible height even when empty */
+    border-bottom: 1px solid #555; /* Optional: line between rows */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+  }
+  
 
 .total-scores {
     display: flex;

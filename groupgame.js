@@ -1,127 +1,154 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-
+// Supabase setup
 const SUPABASE_URL = "https://gbpcccwimpsnvopjyxes.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0"; // Replace with your actual key
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-
+// DOM elements
 const videoElement = document.getElementById('media');
 const timerBar = document.getElementById('timer-bar');
 const countdownText = document.getElementById('countdown-text');
 const skipBtn = document.getElementById('skip-btn');
 const guessBtn = document.getElementById('guess-btn');
-const answerBtn = document.getElementById('answer-btn');
+const showAnswerBtn = document.getElementById('answer-btn');
 const answerText = document.getElementById('answer-text');
 const scoreDisplay = document.getElementById('score');
-const mediaContainer = document.getElementById('media-container');
 
+// Game state
 let questions = [];
-let answeredQuestions = [];
+let currentQuestionIndex = 0;
 let score = 0;
+let answeredQuestions = [];
+let timerInterval;
 let timeLeft = 60;
-let currentCorrectAnswer = "";
 
+// Ensure required data exists
+if (!localStorage.getItem('selectedMix') || !localStorage.getItem('groupName')) {
+    // TEMP: set default values if missing (for testing)
+    localStorage.setItem('selectedMix', 'armenian'); // or 'russian', 'english', 'mix'
+    localStorage.setItem('groupName', 'DefaultGroup');
+}
 
-async function fetchQuestions() {
-    let selectedCategory = localStorage.getItem('selectedMix');
+startGame();
 
-    if (!selectedCategory) {
-        console.error("No category selected.");
+async function startGame() {
+    const selectedCategory = localStorage.getItem('selectedMix');
+    const groupName = localStorage.getItem('groupName');
+
+    if (!selectedCategory || !groupName) {
+        alert("Missing category or group name.");
         return;
     }
 
-    const categoryMapping = {
+    const tableMap = {
         armenian: 'armMix',
         russian: 'rusMix',
         english: 'engMix',
-        mix: 'mix'
+        mix: ['armMix', 'rusMix', 'engMix']
     };
 
-    selectedCategory = categoryMapping[selectedCategory];
-    if (!selectedCategory) {
-        console.error("Invalid category.");
+    const tables = Array.isArray(tableMap[selectedCategory])
+        ? tableMap[selectedCategory]
+        : [tableMap[selectedCategory]];
+
+    let allQuestions = [];
+    for (let table of tables) {
+        const { data, error } = await supabase.from(table).select('*');
+        if (error) {
+            console.error(`Error fetching from ${table}:`, error);
+            continue;
+        }
+        allQuestions = allQuestions.concat(data);
+    }
+
+    if (allQuestions.length === 0) {
+        alert("No questions found.");
         return;
     }
 
-    let allQuestions = [];
-
-    if (selectedCategory === 'mix') {
-        const tables = ['armMix', 'rusMix', 'engMix'];
-        for (let table of tables) {
-            const { data, error } = await supabase.from(table).select('id, fileUrl, correctAnswer');
-            if (!error) allQuestions = allQuestions.concat(data);
-        }
-    } else {
-        const { data, error } = await supabase.from(selectedCategory).select('id, fileUrl, correctAnswer');
-        if (!error) allQuestions = data;
-    }
-
-    if (allQuestions.length > 0) {
-        questions = allQuestions;
-        loadRandomQuestion();
-        startTimer();
-    } else {
-        console.warn("No questions available.");
-    }
+    questions = allQuestions;
+    loadNextQuestion();
+    startTimer();
 }
 
-function loadRandomQuestion() {
-    answerText.textContent = "";
-
-    if (answeredQuestions.length === questions.length) {
-        answeredQuestions = [];
+function loadNextQuestion() {
+    if (answeredQuestions.length >= questions.length) {
+        endGame();
+        return;
     }
 
     let randomIndex;
     do {
         randomIndex = Math.floor(Math.random() * questions.length);
-    } while (answeredQuestions.includes(randomIndex) && answeredQuestions.length < questions.length);
+    } while (answeredQuestions.includes(randomIndex));
 
+    currentQuestionIndex = randomIndex;
     answeredQuestions.push(randomIndex);
 
     const question = questions[randomIndex];
-    currentCorrectAnswer = question.correctAnswer || "Անհայտ պատասխան";
+    answerText.textContent = "";
 
-    mediaContainer.innerHTML = `
-        <video id="video-player" controls autoplay muted>
-            <source src="${question.fileUrl}?t=${Date.now()}" type="video/mp4">
-        </video>
-    `;
+    videoElement.src = question.fileUrl + `?t=${Date.now()}`;
+    videoElement.load();
+    videoElement.play().catch(() => {
+        console.warn("Autoplay prevented. User interaction required.");
+    });
+
+    videoElement.dataset.answer = question.correctAnswer;
 }
 
-function guessAnswer() {
+skipBtn.addEventListener('click', loadNextQuestion);
+
+guessBtn.addEventListener('click', () => {
     score++;
     scoreDisplay.textContent = "Հաշիվ: " + score;
-    loadRandomQuestion();
-}
+    loadNextQuestion();
+});
+
+showAnswerBtn.addEventListener('click', () => {
+    const answer = videoElement.dataset.answer;
+    answerText.textContent = "Correct Answer: " + answer;
+});
 
 function startTimer() {
-    const interval = setInterval(() => {
+    timerBar.style.width = "100%";
+    countdownText.textContent = `00:${timeLeft < 10 ? "0" + timeLeft : timeLeft}`;
+
+    timerInterval = setInterval(() => {
         timeLeft--;
-        timerBar.style.width = (timeLeft / 60) * 100 + "%";
+        const percent = (timeLeft / 60) * 100;
+        timerBar.style.width = percent + "%";
         countdownText.textContent = `00:${timeLeft < 10 ? "0" + timeLeft : timeLeft}`;
 
         if (timeLeft <= 0) {
-            clearInterval(interval);
+            clearInterval(timerInterval);
             endGame();
         }
     }, 1000);
 }
 
-function showAnswer() {
-    answerText.textContent = `Ճիշտ պատասխանն է՝ ${currentCorrectAnswer}`;
+async function endGame() {
+    const groupName = localStorage.getItem('groupName');
+
+    if (groupName) {
+        const { data, error } = await supabase
+            .from('groups')
+            .select('score')
+            .eq('groupName', groupName)
+            .single();
+
+        const currentScore = data ? data.score || 0 : 0;
+
+        const { error: updateError } = await supabase
+            .from('groups')
+            .upsert({ groupName, score: currentScore + score });
+
+        if (updateError) {
+            console.error("Score update failed:", updateError);
+        }
+    }
+
+    localStorage.setItem('groupScore', score);
+    window.location.href = "alias.html";
 }
-
-function endGame() {
-    localStorage.setItem("groupScore", score);
-    window.location.href = "endgame.html";
-}
-
-
-skipBtn.addEventListener('click', loadRandomQuestion);
-guessBtn.addEventListener('click', guessAnswer);
-answerBtn.addEventListener('click', showAnswer);
-
-
-fetchQuestions();

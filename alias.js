@@ -1,16 +1,87 @@
 function start() {
     const team1 = document.getElementById("team1").value.trim();
     const team2 = document.getElementById("team2").value.trim();
-
+  
     if (!team1 || !team2) {
-        alert("Խնդրում ենք մուտքագրել երկու խմբերի անունները։");
-        return;
+      alert("Խնդրում ենք մուտքագրել երկու թիմերի անունները։");
+      return;
     }
-
-
+  
     localStorage.setItem("group1", team1);
     localStorage.setItem("group2", team2);
-
-   
+  
+    if (!localStorage.getItem("turnCount")) {
+      localStorage.setItem("turnCount", "0");
+    }
+  
     window.location.href = "groupgame.html";
-}
+  }
+  
+  function updateTotal(teamId, score) {
+    const current = parseInt(localStorage.getItem(teamId)) || 0;
+    const newTotal = current + score;
+    localStorage.setItem(teamId, newTotal);
+    const el = document.getElementById(teamId);
+    if (el) el.textContent = newTotal;
+  }
+  
+  function restoreRowScores() {
+    for (let i = 1; i <= 5; i++) {
+      const team1Score = localStorage.getItem(`team1-row-${i}`);
+      const team2Score = localStorage.getItem(`team2-row-${i}`);
+      if (team1Score !== null) {
+        const cell1 = document.getElementById(`team1-row-${i}`);
+        if (cell1) cell1.textContent = team1Score;
+      }
+      if (team2Score !== null) {
+        const cell2 = document.getElementById(`team2-row-${i}`);
+        if (cell2) cell2.textContent = team2Score;
+      }
+    }
+  }
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    const group1 = localStorage.getItem("group1") || "Խումբ 1";
+    const group2 = localStorage.getItem("group2") || "Խումբ 2";
+  
+    const team1Input = document.getElementById("team1");
+    const team2Input = document.getElementById("team2");
+    if (team1Input) team1Input.value = group1;
+    if (team2Input) team2Input.value = group2;
+  
+    document.getElementById("team1-total").textContent =
+      localStorage.getItem("team1-total") || "0";
+    document.getElementById("team2-total").textContent =
+      localStorage.getItem("team2-total") || "0";
+  
+    restoreRowScores(); // <-- Restore all played row scores from localStorage
+  
+    let score = parseInt(localStorage.getItem("groupScore"));
+    let turnCount = parseInt(localStorage.getItem("turnCount")) || 0;
+  
+    if (!isNaN(score) && turnCount < 10) {
+      const isTeam1 = turnCount % 2 === 0;
+      const teamKey = isTeam1 ? "team1" : "team2";
+      const rowIndex = Math.floor(turnCount / 2) + 1;
+      const cellId = `${teamKey}-row-${rowIndex}`;
+      const cell = document.getElementById(cellId);
+  
+      if (cell && cell.textContent.trim() === "") {
+        cell.textContent = score;
+        updateTotal(`${teamKey}-total`, score);
+  
+        // Save the score into localStorage for persistence
+        localStorage.setItem(`${teamKey}-row-${rowIndex}`, score.toString());
+  
+        turnCount += 1;
+        localStorage.setItem("turnCount", turnCount.toString());
+  
+        if (turnCount === 10) {
+          alert("Խաղը ավարտվել է։");
+        }
+  
+        localStorage.removeItem("groupScore");
+      }
+    }
+  });
+  
