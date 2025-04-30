@@ -152,3 +152,10 @@ async function endGame() {
     localStorage.setItem('groupScore', score);
     window.location.href = "alias.html";
 }
+window.goBack = function() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    window.location.href = "category.html"; 
+};
+
