@@ -22,11 +22,11 @@ let score = 0;
 let answeredQuestions = [];
 let timerInterval;
 let timeLeft = 60;
+let gameEnded = false;
 
 // Ensure required data exists
 if (!localStorage.getItem('selectedMix') || !localStorage.getItem('groupName')) {
-    // TEMP: set default values if missing (for testing)
-    localStorage.setItem('selectedMix', 'armenian'); // or 'russian', 'english', 'mix'
+    localStorage.setItem('selectedMix', 'armenian'); // default fallback
     localStorage.setItem('groupName', 'DefaultGroup');
 }
 
@@ -73,7 +73,7 @@ async function startGame() {
 }
 
 function loadNextQuestion() {
-    if (answeredQuestions.length >= questions.length) {
+    if (gameEnded || answeredQuestions.length >= questions.length) {
         endGame();
         return;
     }
@@ -98,15 +98,22 @@ function loadNextQuestion() {
     videoElement.dataset.answer = question.correctAnswer;
 }
 
-skipBtn.addEventListener('click', loadNextQuestion);
+skipBtn.addEventListener('click', () => {
+    if (gameEnded) return;
+    loadNextQuestion();
+});
 
 guessBtn.addEventListener('click', () => {
+    if (gameEnded) return;
+
     score++;
     scoreDisplay.textContent = "Հաշիվ: " + score;
     loadNextQuestion();
 });
 
 showAnswerBtn.addEventListener('click', () => {
+    if (gameEnded) return;
+
     const answer = videoElement.dataset.answer;
     answerText.textContent = "Correct Answer: " + answer;
 });
@@ -129,6 +136,9 @@ function startTimer() {
 }
 
 async function endGame() {
+    if (gameEnded) return;
+    gameEnded = true;
+
     const groupName = localStorage.getItem('groupName');
 
     if (groupName) {
@@ -152,10 +162,12 @@ async function endGame() {
     localStorage.setItem('groupScore', score);
     window.location.href = "alias.html";
 }
+
+// Going back to category
 window.goBack = function() {
     if (timerInterval) {
         clearInterval(timerInterval);
     }
-    window.location.href = "category.html"; 
+    gameEnded = true;
+    window.location.href = "category.html";
 };
-
