@@ -7,39 +7,41 @@
   <link rel="stylesheet" href="category.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="top-bar">
-          <div class="name">ՍաունդՔվեսթ</div>
-          <button class="top-button" id="toggle-mode">ՀԱ</button> <!-- Mode Toggle Button -->
-        </div>
-      
-        <div class="title">Կատեգորիաներ</div>
-      
-        <div class="mix-grid">
-            <label class="mix-box">
-              <input type="radio" name="mix" value="armenian" id="armenian" />
-              <img src="photos/armMix.jpg" alt="Armenian mix">
-            </label>
-          
-            <label class="mix-box">
-              <input type="radio" name="mix" value="russian" id="russian" />
-              <img src="photos/rusMix.jpg" alt="Russian mix">
-            </label>
-          
-            <label class="mix-box">
-              <input type="radio" name="mix" value="english" id="english" />
-              <img src="photos/engMix.jpg" alt="English mix">
-            </label>
-          
-            <label class="mix-box">
-              <input type="radio" name="mix" value="mix" id="mix" />
-              <img src="photos/mix.jpg" alt="Mix">
-            </label>
-        </div>
-      
-        <button class="start-button" id="start-button">Սկսել</button> 
+  <div class="container">
+    <div class="top-bar">
+      <!-- Back button styled like toggle-mode button -->
+      <button class="top-button back-anim" onclick="window.location.href='start.html'">⬅</button>
+      <div class="name">ՍաունդՔվեսթ</div>
+      <button class="top-button" id="toggle-mode">ՀԱ</button> 
     </div>
-      
-    <script src="category.js"></script> 
+
+    <div class="title">Կատեգորիաներ</div>
+
+    <div class="mix-grid">
+      <label class="mix-box">
+        <input type="radio" name="mix" value="armenian" id="armenian" />
+        <img src="photos/armMix.jpg" alt="Armenian mix">
+      </label>
+
+      <label class="mix-box">
+        <input type="radio" name="mix" value="russian" id="russian" />
+        <img src="photos/rusMix.jpg" alt="Russian mix">
+      </label>
+
+      <label class="mix-box">
+        <input type="radio" name="mix" value="english" id="english" />
+        <img src="photos/engMix.jpg" alt="English mix">
+      </label>
+
+      <label class="mix-box">
+        <input type="radio" name="mix" value="mix" id="mix" />
+        <img src="photos/mix.jpg" alt="Mix">
+      </label>
+    </div>
+
+    <button class="start-button" id="start-button">Սկսել</button>
+  </div>
+
+  <script src="category.js"></script> 
 </body>
 </html>

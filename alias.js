@@ -61,6 +61,12 @@ function isReload() {
   return performance.navigation.type === 1;
 }
 
+// Moved outside to make it globally accessible
+function goBack() {
+  clearGame();
+  window.location.href = "category.html";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (isReload()) {
       clearGame();
@@ -75,10 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
   if (team1Input) team1Input.value = group1;
   if (team2Input) team2Input.value = group2;
 
-  document.getElementById("team1-total").textContent =
-      localStorage.getItem("team1-total") || "0";
-  document.getElementById("team2-total").textContent =
-      localStorage.getItem("team2-total") || "0";
+  const team1TotalEl = document.getElementById("team1-total");
+  const team2TotalEl = document.getElementById("team2-total");
+
+  if (team1TotalEl) team1TotalEl.textContent = localStorage.getItem("team1-total") || "0";
+  if (team2TotalEl) team2TotalEl.textContent = localStorage.getItem("team2-total") || "0";
 
   restoreRowScores();
 
@@ -107,10 +114,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   }
 
-  
-  history.pushState(null, "", location.href);
-  window.addEventListener("popstate", function () {
-      clearGame();
-      window.location.href = "category.html";
-  });
+  // ✅ Add back button event listener
+  const backBtn = document.getElementById("backBtn");
+  if (backBtn) {
+    backBtn.addEventListener("click", goBack);
+  }
 });
