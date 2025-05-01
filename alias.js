@@ -53,7 +53,20 @@ function clearGame() {
   localStorage.removeItem("groupScore");
 }
 
+function isReload() {
+  const navEntries = performance.getEntriesByType("navigation");
+  if (navEntries.length > 0 && navEntries[0].type === "reload") {
+      return true;
+  }
+  return performance.navigation.type === 1;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (isReload()) {
+      clearGame();
+      return;
+  }
+
   const group1 = localStorage.getItem("group1") || "Խումբ 1";
   const group2 = localStorage.getItem("group2") || "Խումբ 2";
 
@@ -94,9 +107,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   }
 
-  // Prevent back navigation
+  
   history.pushState(null, "", location.href);
   window.addEventListener("popstate", function () {
+      clearGame();
       window.location.href = "category.html";
   });
 });
