@@ -1,7 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const SUPABASE_URL = "https://gbpcccwimpsnvopjyxes.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0"; 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let optionsContainer, mediaContainer, countdownText, timerBar, scoreText;
@@ -26,6 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchQuestions();
 });
 
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; 
+    }
+}
+
 async function fetchQuestions() {
   let selectedCategory = localStorage.getItem('selectedMix');
   const map = { armenian: 'armMix', russian: 'rusMix', english: 'engMix', mix: 'mix' };
@@ -48,6 +56,7 @@ async function fetchQuestions() {
 
   if (allQuestions.length) {
     questions = allQuestions;
+    shuffleArray(questions); 
     loadRandomQuestion();
   }
 }
@@ -179,3 +188,21 @@ function openEndPage() {
   localStorage.setItem('songResults', JSON.stringify(songResults));
   window.location.href = 'endgame.html';
 }
+
+
+function repeatGame() {
+
+  answeredQuestions = [];
+  score = 0;
+  timeLeft = 60;
+  songResults = [];
+  localStorage.removeItem('score');
+  localStorage.removeItem('songResults');
+
+
+  shuffleArray(questions);
+
+  loadRandomQuestion();
+}
+
+document.getElementById("repeatBtn").addEventListener("click", repeatGame);

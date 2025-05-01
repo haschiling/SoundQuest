@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Get the selected language from localStorage
-    const lang = localStorage.getItem("lang") || "hy"; // Default to Armenian if not set
 
-    // Translations for Armenian (hy) and English (en)
+    const lang = localStorage.getItem("lang") || "hy"; 
+
+
     const translations = {
         hy: {
             guessedText: "Դուք գուշակել եք",
@@ -38,10 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Set the language-specific translations
+
     const t = translations[lang] || translations.hy;
 
-    // Set translated text for category, guessed text, and buttons
+
     const guessedText = document.getElementById("guessed-text");
     const songText = document.getElementById("song-text");
     const repeatBtn = document.getElementById("repeatBtn");
@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (endBtn) endBtn.textContent = t.endBtn;
     if (langBtn) langBtn.textContent = t.langBtn;
 
-    // Set category title text dynamically
+
     const selectedMix = localStorage.getItem("selectedMix");
-    const categoryNames = t.categories; // Use the dynamic category names based on selected language
+    const categoryNames = t.categories;
 
     if (categoryTitle) {
         categoryTitle.textContent = selectedMix && categoryNames[selectedMix]
@@ -65,12 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
             : `${t.categoryText} ${t.noCategory}`;
     }
 
-    // Set score
+
     const scoreElement = document.getElementById("score");
     const score = localStorage.getItem("score");
     scoreElement.textContent = score ? `${score}` : "0";
 
-    // Get song results from localStorage
     const songList = getGameResults();
     const songListContainer = document.getElementById("song-list");
 
@@ -87,15 +86,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Event listeners for buttons
+
     document.getElementById("repeatBtn").addEventListener("click", repeatGame);
     document.getElementById("endBtn").addEventListener("click", resetGame);
 
-    // Language toggle button
     langBtn.addEventListener("click", () => {
         const newLang = lang === "hy" ? "en" : "hy";
-        localStorage.setItem("lang", newLang); // Store the selected language
-        location.reload(); // Reload the page to apply the new language
+        localStorage.setItem("lang", newLang); 
+        location.reload(); 
     });
 });
 

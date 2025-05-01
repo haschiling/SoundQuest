@@ -71,7 +71,6 @@ function goBack() {
 document.addEventListener("DOMContentLoaded", () => {
   const lang = localStorage.getItem("lang");
 
-  // Translate page if language is English
   if (lang === "en") {
     const teamLabels = document.querySelectorAll("label[for]");
     if (teamLabels.length >= 2) {

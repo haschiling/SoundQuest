@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const title = document.querySelector('.title');
     const nameLabel = document.querySelector('.name');
 
-    // Initialize language from localStorage
+
     let isEnglish = localStorage.getItem('lang') === 'en';
 
     function updateLanguage() {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Save selected music mix to localStorage
+
     const radioButtons = document.querySelectorAll('input[name="mix"]');
     radioButtons.forEach((button) => {
         button.addEventListener('change', function () {

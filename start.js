@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// selectMode stays unchanged
+
 function selectMode(mode) {
     localStorage.setItem("selectedMode", mode);
     console.log("Mode selected:", mode);

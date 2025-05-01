@@ -1,11 +1,11 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Supabase setup
+
 const SUPABASE_URL = "https://gbpcccwimpsnvopjyxes.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdicGNjY3dpbXBzbnZvcGp5eGVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4NDc0OTMsImV4cCI6MjA1ODQyMzQ5M30.AFLVmnyo7zHX11u0wiTa-cb3nSWr-ZfM8MqD1xWIQt0";
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// DOM elements
+
 const videoElement = document.getElementById('media');
 const timerBar = document.getElementById('timer-bar');
 const countdownText = document.getElementById('countdown-text');
@@ -15,7 +15,7 @@ const showAnswerBtn = document.getElementById('answer-btn');
 const answerText = document.getElementById('answer-text');
 const scoreDisplay = document.getElementById('score');
 
-// Game state
+
 let questions = [];
 let currentQuestionIndex = 0;
 let score = 0;
@@ -136,7 +136,7 @@ skipBtn.addEventListener('click', () => {
 guessBtn.addEventListener('click', () => {
     if (gameEnded) return;
     score++;
-    updateLanguage(); // re-render score with language
+    updateLanguage(); 
     loadNextQuestion();
 });
 
