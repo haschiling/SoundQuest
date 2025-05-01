@@ -2,16 +2,18 @@ function start() {
   const team1 = document.getElementById("team1").value.trim();
   const team2 = document.getElementById("team2").value.trim();
 
+  const lang = localStorage.getItem("lang");
+
   if (!team1 || !team2) {
-      alert("Խնդրում ենք մուտքագրել երկու թիմերի անունները։");
-      return;
+    alert(lang === "en" ? "Please enter names for both teams." : "Խնդրում ենք մուտքագրել երկու թիմերի անունները։");
+    return;
   }
 
   localStorage.setItem("group1", team1);
   localStorage.setItem("group2", team2);
 
   if (!localStorage.getItem("turnCount")) {
-      localStorage.setItem("turnCount", "0");
+    localStorage.setItem("turnCount", "0");
   }
 
   window.location.href = "groupgame.html";
@@ -27,23 +29,23 @@ function updateTotal(teamId, score) {
 
 function restoreRowScores() {
   for (let i = 1; i <= 5; i++) {
-      const team1Score = localStorage.getItem(`team1-row-${i}`);
-      const team2Score = localStorage.getItem(`team2-row-${i}`);
-      if (team1Score !== null) {
-          const cell1 = document.getElementById(`team1-row-${i}`);
-          if (cell1) cell1.textContent = team1Score;
-      }
-      if (team2Score !== null) {
-          const cell2 = document.getElementById(`team2-row-${i}`);
-          if (cell2) cell2.textContent = team2Score;
-      }
+    const team1Score = localStorage.getItem(`team1-row-${i}`);
+    const team2Score = localStorage.getItem(`team2-row-${i}`);
+    if (team1Score !== null) {
+      const cell1 = document.getElementById(`team1-row-${i}`);
+      if (cell1) cell1.textContent = team1Score;
+    }
+    if (team2Score !== null) {
+      const cell2 = document.getElementById(`team2-row-${i}`);
+      if (cell2) cell2.textContent = team2Score;
+    }
   }
 }
 
 function clearGame() {
   for (let i = 1; i <= 5; i++) {
-      localStorage.removeItem(`team1-row-${i}`);
-      localStorage.removeItem(`team2-row-${i}`);
+    localStorage.removeItem(`team1-row-${i}`);
+    localStorage.removeItem(`team2-row-${i}`);
   }
   localStorage.removeItem("team1-total");
   localStorage.removeItem("team2-total");
@@ -56,25 +58,47 @@ function clearGame() {
 function isReload() {
   const navEntries = performance.getEntriesByType("navigation");
   if (navEntries.length > 0 && navEntries[0].type === "reload") {
-      return true;
+    return true;
   }
   return performance.navigation.type === 1;
 }
 
-// Moved outside to make it globally accessible
 function goBack() {
   clearGame();
   window.location.href = "category.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (isReload()) {
-      clearGame();
-      return;
+  const lang = localStorage.getItem("lang");
+
+  // Translate page if language is English
+  if (lang === "en") {
+    const teamLabels = document.querySelectorAll("label[for]");
+    if (teamLabels.length >= 2) {
+      teamLabels[0].textContent = "Team 1";
+      teamLabels[1].textContent = "Team 2";
+    }
+
+    const inputs = document.querySelectorAll("input[type='text']");
+    if (inputs.length >= 2) {
+      inputs[0].placeholder = "Name...";
+      inputs[1].placeholder = "Name...";
+    }
+
+    const forwardBtn = document.querySelector("button[onclick='start()']");
+    if (forwardBtn) forwardBtn.textContent = "Next";
+
+    const backBtn = document.querySelector(".back-button");
+    if (backBtn) backBtn.textContent = "⬅";
   }
 
-  const group1 = localStorage.getItem("group1") || "Խումբ 1";
-  const group2 = localStorage.getItem("group2") || "Խումբ 2";
+  if (isReload()) {
+    clearGame();
+    return;
+  }
+
+  const group1 = localStorage.getItem("group1") || (lang === "en" ? "Team 1" : "Խումբ 1");
+  const group2 = localStorage.getItem("group2") || (lang === "en" ? "Team 2" : "Խումբ 2");
 
   const team1Input = document.getElementById("team1");
   const team2Input = document.getElementById("team2");
@@ -93,28 +117,27 @@ document.addEventListener("DOMContentLoaded", () => {
   let turnCount = parseInt(localStorage.getItem("turnCount")) || 0;
 
   if (!isNaN(score) && turnCount < 10) {
-      const isTeam1 = turnCount % 2 === 0;
-      const teamKey = isTeam1 ? "team1" : "team2";
-      const rowIndex = Math.floor(turnCount / 2) + 1;
-      const cellId = `${teamKey}-row-${rowIndex}`;
-      const cell = document.getElementById(cellId);
+    const isTeam1 = turnCount % 2 === 0;
+    const teamKey = isTeam1 ? "team1" : "team2";
+    const rowIndex = Math.floor(turnCount / 2) + 1;
+    const cellId = `${teamKey}-row-${rowIndex}`;
+    const cell = document.getElementById(cellId);
 
-      if (cell && cell.textContent.trim() === "") {
-          cell.textContent = score;
-          updateTotal(`${teamKey}-total`, score);
+    if (cell && cell.textContent.trim() === "") {
+      cell.textContent = score;
+      updateTotal(`${teamKey}-total`, score);
 
-          localStorage.setItem(`${teamKey}-row-${rowIndex}`, score.toString());
+      localStorage.setItem(`${teamKey}-row-${rowIndex}`, score.toString());
 
-          turnCount += 1;
-          localStorage.setItem("turnCount", turnCount.toString());
+      turnCount += 1;
+      localStorage.setItem("turnCount", turnCount.toString());
 
-          if (turnCount === 10) {
-              clearGame();
-          }
+      if (turnCount === 10) {
+        clearGame();
       }
+    }
   }
 
-  // ✅ Add back button event listener
   const backBtn = document.getElementById("backBtn");
   if (backBtn) {
     backBtn.addEventListener("click", goBack);

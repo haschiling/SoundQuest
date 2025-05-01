@@ -1,16 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
-
     const toggleModeButton = document.getElementById('toggle-mode');
+    const startButton = document.getElementById('start-button');
+    const title = document.querySelector('.title');
+    const nameLabel = document.querySelector('.name');
 
-    // Toggle between solo and group mode
+    // Initialize language from localStorage
+    let isEnglish = localStorage.getItem('lang') === 'en';
+
+    function updateLanguage() {
+        if (isEnglish) {
+            toggleModeButton.textContent = 'EN';
+            title.textContent = 'Categories';
+            startButton.textContent = 'Start';
+            nameLabel.textContent = 'SoundQuest';
+        } else {
+            toggleModeButton.textContent = 'ՀԱ';
+            title.textContent = 'Կատեգորիաներ';
+            startButton.textContent = 'Սկսել';
+            nameLabel.textContent = 'ՍաունդՔվեսթ';
+        }
+    }
+
+    updateLanguage();
+
     if (toggleModeButton) {
         toggleModeButton.addEventListener('click', function () {
-            let newMode = localStorage.getItem('selectedMode') === 'group' ? 'solo' : 'group';
-            localStorage.setItem('selectedMode', newMode);
-            console.log(`Selected mode: ${newMode}`);
+            isEnglish = !isEnglish;
+            localStorage.setItem('lang', isEnglish ? 'en' : 'hy');
+            updateLanguage();
         });
-    } else {
-        console.error('Mode toggle button not found!');
     }
 
     // Save selected music mix to localStorage
@@ -22,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Set radio button checked state based on saved mix
     const selectedMix = localStorage.getItem('selectedMix');
     if (selectedMix) {
         const selectedRadioButton = document.querySelector(`input[value="${selectedMix}"]`);
@@ -31,41 +48,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Start button navigation logic
-    const startButton = document.getElementById('start-button');
     if (startButton) {
         startButton.addEventListener('click', function () {
             const mode = localStorage.getItem('selectedMode');
             const category = localStorage.getItem('selectedMix');
 
             if (!mode || !category) {
-                alert('Խնդրում ենք ընտրել երաժշտական ոճ և կատեգորիա');
+                alert(isEnglish ? 'Please select a mix and category.' : 'Խնդրում ենք ընտրել երաժշտական ոճ և կատեգորիա');
             } else {
-                if (mode === 'group') {
-                    console.log('Redirecting to alias.html');
-                    window.location.href = "alias.html";
-                } else {
-                    console.log('Redirecting to sologame.html');
-                    window.location.href = "sologame.html";
-                }
+                window.location.href = mode === 'group' ? 'alias.html' : 'sologame.html';
             }
         });
-    } else {
-        console.error('Start button not found!');
     }
 
-    // Push initial history state
     history.pushState(null, "", location.href);
 
-    // Handle back navigation to go to start.html
     window.addEventListener("popstate", function () {
         const mode = localStorage.getItem("selectedMode");
         const mix = localStorage.getItem("selectedMix");
+        const lang = localStorage.getItem("lang");
 
-        localStorage.clear(); // Clear all game-related data
+        localStorage.clear();
         if (mode) localStorage.setItem("selectedMode", mode);
         if (mix) localStorage.setItem("selectedMix", mix);
+        if (lang) localStorage.setItem("lang", lang);
 
-        location.replace("start.html"); // Prevent returning to this page again
+        location.replace("start.html");
     });
 });

@@ -16,21 +16,36 @@ let videoElement;
 let songResults = [];
 
 document.addEventListener("DOMContentLoaded", () => {
+    const lang = localStorage.getItem("lang");
+    const isEnglish = lang === "en";
+
+    // Safely update UI text
+    const timeLabel = document.querySelector('.header span');
+    if (timeLabel) {
+        timeLabel.textContent = isEnglish ? 'Time:' : 'Ժամանակ:';
+    }
+
+    scoreText = document.getElementById('score');
+    if (scoreText) {
+        scoreText.textContent = isEnglish ? 'Score: 0' : 'Հաշիվ: 0';
+    }
+
     optionsContainer = document.getElementById('options-container');
     mediaContainer = document.getElementById('media-container');
     timerBar = document.getElementById('timer-bar');
     countdownText = document.getElementById('countdown-text');
-    scoreText = document.getElementById('score');
 
-    // Reset score and results
     localStorage.removeItem('score');
     localStorage.removeItem('songResults');
     score = 0;
     updateScore();
 
-    document.querySelector('.close-btn').addEventListener('click', () => {
-        window.location.href = 'category.html';
-    });
+    const closeBtn = document.querySelector('.close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            window.location.href = 'category.html';
+        });
+    }
 
     fetchQuestions();
 });
@@ -41,8 +56,6 @@ async function fetchQuestions() {
         console.error("No category selected.");
         return;
     }
-
-    let allQuestions = [];
 
     const categoryMapping = {
         armenian: 'armMix',
@@ -56,6 +69,8 @@ async function fetchQuestions() {
         console.error("Invalid category.");
         return;
     }
+
+    let allQuestions = [];
 
     if (selectedCategory === 'mix') {
         const tables = ['armMix', 'rusMix', 'engMix'];
@@ -107,8 +122,6 @@ function loadRandomQuestion() {
     `;
 
     videoElement = document.getElementById('video-player');
-
-
     videoElement.onplay = () => {
         if (!isTimerRunning) {
             startTimer();
@@ -153,7 +166,6 @@ function checkAnswer(selected, correct) {
     localStorage.setItem("songResults", JSON.stringify(songResults));
     updateScore();
 
-    // Style the options
     const optionButtons = document.querySelectorAll('.option');
     optionButtons.forEach(btn => {
         const optionText = btn.textContent.trim().toLowerCase();
@@ -165,14 +177,14 @@ function checkAnswer(selected, correct) {
         btn.disabled = true;
     });
 
-
     setTimeout(nextQuestion, 2000);
 }
 
-
 function updateScore() {
     if (scoreText) {
-        scoreText.textContent = `Հաշիվ: ${score}`;
+        const lang = localStorage.getItem("lang");
+        const isEnglish = lang === "en";
+        scoreText.textContent = (isEnglish ? "Score: " : "Հաշիվ: ") + score;
     }
 }
 
@@ -201,11 +213,15 @@ function stopTimer() {
 }
 
 function updateTimerBar() {
-    timerBar.style.width = (timeLeft / 60) * 100 + "%";
+    if (timerBar) {
+        timerBar.style.width = (timeLeft / 60) * 100 + "%";
+    }
 }
 
 function updateCountdownText() {
-    countdownText.textContent = `${timeLeft}s`;
+    if (countdownText) {
+        countdownText.textContent = `${timeLeft}s`;
+    }
 }
 
 function nextQuestion() {

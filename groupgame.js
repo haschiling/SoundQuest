@@ -24,22 +24,52 @@ let timerInterval;
 let timeLeft = 60;
 let gameEnded = false;
 
-// Ensure required data exists
 if (!localStorage.getItem('selectedMix') || !localStorage.getItem('groupName')) {
-    localStorage.setItem('selectedMix', 'armenian'); // default fallback
+    localStorage.setItem('selectedMix', 'armenian');
     localStorage.setItem('groupName', 'DefaultGroup');
 }
 
+updateLanguage();
 startGame();
+
+function updateLanguage() {
+    const lang = localStorage.getItem('lang');
+    const isEnglish = lang === 'en';
+
+    if (guessBtn) guessBtn.textContent = isEnglish ? 'Guess' : 'Կռահել';
+    if (skipBtn) skipBtn.textContent = isEnglish ? 'Skip' : 'Բաց թողնել';
+    if (showAnswerBtn) showAnswerBtn.textContent = isEnglish ? 'Show Answer' : 'Ցույց տալ պատասխանը';
+    if (scoreDisplay) scoreDisplay.textContent = (isEnglish ? 'Score: ' : 'Հաշիվ: ') + score;
+
+    const timeLabel = document.querySelector('.header span');
+    if (timeLabel) timeLabel.textContent = isEnglish ? 'Time:' : 'Ժամանակ:';
+
+    const closeBtn = document.querySelector('.close-btn');
+    if (closeBtn) closeBtn.title = isEnglish ? 'Go back' : 'Վերադառնալ';
+}
+
+window.addEventListener('storage', (event) => {
+    if (event.key === 'lang') {
+        updateLanguage();
+    }
+});
+
+function clearGame() {
+    for (let i = 1; i <= 5; i++) {
+        localStorage.removeItem(`team1-row-${i}`);
+        localStorage.removeItem(`team2-row-${i}`);
+    }
+    localStorage.removeItem("team1-total");
+    localStorage.removeItem("team2-total");
+    localStorage.removeItem("turnCount");
+    localStorage.removeItem("group1");
+    localStorage.removeItem("group2");
+    localStorage.removeItem("groupScore");
+}
 
 async function startGame() {
     const selectedCategory = localStorage.getItem('selectedMix');
     const groupName = localStorage.getItem('groupName');
-
-    if (!selectedCategory || !groupName) {
-        alert("Missing category or group name.");
-        return;
-    }
 
     const tableMap = {
         armenian: 'armMix',
@@ -87,7 +117,7 @@ function loadNextQuestion() {
     answeredQuestions.push(randomIndex);
 
     const question = questions[randomIndex];
-    answerText.textContent = "";
+    if (answerText) answerText.textContent = "";
 
     videoElement.src = question.fileUrl + `?t=${Date.now()}`;
     videoElement.load();
@@ -105,34 +135,39 @@ skipBtn.addEventListener('click', () => {
 
 guessBtn.addEventListener('click', () => {
     if (gameEnded) return;
-
     score++;
-    scoreDisplay.textContent = "Հաշիվ: " + score;
+    updateLanguage(); // re-render score with language
     loadNextQuestion();
 });
 
 showAnswerBtn.addEventListener('click', () => {
     if (gameEnded) return;
 
+    const lang = localStorage.getItem('lang');
+    const isEnglish = lang === 'en';
     const answer = videoElement.dataset.answer;
-    answerText.textContent = "Correct Answer: " + answer;
+    answerText.textContent = (isEnglish ? "Correct Answer: " : "Ճիշտ պատասխան՝ ") + answer;
 });
 
 function startTimer() {
     timerBar.style.width = "100%";
-    countdownText.textContent = `00:${timeLeft < 10 ? "0" + timeLeft : timeLeft}`;
+    updateCountdownDisplay();
 
     timerInterval = setInterval(() => {
         timeLeft--;
-        const percent = (timeLeft / 60) * 100;
-        timerBar.style.width = percent + "%";
-        countdownText.textContent = `00:${timeLeft < 10 ? "0" + timeLeft : timeLeft}`;
+        updateCountdownDisplay();
 
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             endGame();
         }
     }, 1000);
+}
+
+function updateCountdownDisplay() {
+    const formattedTime = `00:${timeLeft < 10 ? "0" + timeLeft : timeLeft}`;
+    countdownText.textContent = formattedTime;
+    timerBar.style.width = (timeLeft / 60) * 100 + "%";
 }
 
 async function endGame() {
@@ -163,11 +198,12 @@ async function endGame() {
     window.location.href = "alias.html";
 }
 
-// Going back to category
-window.goBack = function() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-    }
+window.goBack = function () {
+    if (timerInterval) clearInterval(timerInterval);
+    clearGame();
     gameEnded = true;
-    window.location.href = "category.html";
+    localStorage.removeItem('groupScore');
+    setTimeout(() => {
+        window.location.href = "category.html";
+    }, 50);
 };
