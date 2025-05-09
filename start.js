@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
             langBtn.textContent = "ՀԱ";
             title.textContent = "ՍաունդՔվեսթ";
             allHeadings[0].textContent = "ԽոսքՔվեսթ";
-            allHeadings[1].textContent = "ՄեզեդիՔվեսթ";
+            allHeadings[1].textContent = "ՄեղեդիՔվեսթ";
         }
     }
 

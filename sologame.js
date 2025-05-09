@@ -142,7 +142,7 @@ function checkAnswer(selected, correct) {
 }
 
 function updateScore() {
-  if (scoreText) scoreText.textContent = "Score: " + score;
+  if (scoreText) scoreText.textContent = "Հաշիվ: " + score;
 }
 
 function startTimer() {
