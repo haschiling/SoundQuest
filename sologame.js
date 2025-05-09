@@ -6,7 +6,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let optionsContainer, mediaContainer, countdownText, timerBar, scoreText;
 let questions = [], answeredQuestions = [], songResults = [];
-let score = 0, timerInterval, timeLeft = 60, isTimerRunning = false, answered = false;
+let score = 0, timerInterval, timeLeft = 30, isTimerRunning = false, answered = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   scoreText = document.getElementById('score');

@@ -21,7 +21,7 @@ let currentQuestionIndex = 0;
 let score = 0;
 let answeredQuestions = [];
 let timerInterval;
-let timeLeft = 60;
+let timeLeft = 30;
 let gameEnded = false;
 
 if (!localStorage.getItem('selectedMix') || !localStorage.getItem('groupName')) {
@@ -36,7 +36,7 @@ function updateLanguage() {
     const lang = localStorage.getItem('lang');
     const isEnglish = lang === 'en';
 
-    if (guessBtn) guessBtn.textContent = isEnglish ? 'Guess' : 'Կռահել';
+    if (guessBtn) guessBtn.textContent = isEnglish ? 'Guess' : 'Կռահեցի';
     if (skipBtn) skipBtn.textContent = isEnglish ? 'Skip' : 'Բաց թողնել';
     if (showAnswerBtn) showAnswerBtn.textContent = isEnglish ? 'Show Answer' : 'Ցույց տալ պատասխանը';
     if (scoreDisplay) scoreDisplay.textContent = (isEnglish ? 'Score: ' : 'Հաշիվ: ') + score;
