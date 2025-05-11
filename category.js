@@ -73,6 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (mix) localStorage.setItem("selectedMix", mix);
         if (lang) localStorage.setItem("lang", lang);
 
-        location.replace("start.html");
+        location.replace("index.html");
     });
 });
