@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const selectedMix = localStorage.getItem('selectedMix');
     if (selectedMix) {
-        const selectedRadioButton = document.querySelector(`input[value="${selectedMix}"]`);
+        const selectedRadioButton = document.querySelector(input[value="${selectedMix}"]);
         if (selectedRadioButton) {
             selectedRadioButton.checked = true;
         }
@@ -76,3 +76,20 @@ document.addEventListener('DOMContentLoaded', function () {
         location.replace("index.html");
     });
 });
+const mixBoxes = document.querySelectorAll('.mix-box');
+const radios = document.querySelectorAll('input[name="mix"]');
+
+radios.forEach((radio, index) => {
+  radio.addEventListener('change', function () {
+    mixBoxes.forEach(box => box.classList.remove('selected'));
+    mixBoxes[index].classList.add('selected');
+  });
+});
+const stored = localStorage.getItem('selectedMix');
+if (stored) {
+  const checkedRadio = document.querySelector(input[name="mix"][value="${stored}"]);
+  if (checkedRadio) {
+    const box = checkedRadio.closest('.mix-box');
+    if (box) box.classList.add('selected');
+  }
+}

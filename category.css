@@ -132,4 +132,10 @@ body {
   .back-anim {
     animation: bounceIn 0.4s ease;
   }
-  
+ /* Highlight the selected category with a white rounded border */
+.mix-box.selected {
+  position: relative;
+  outline: 4px solid white;
+  border-radius: 18px;
+  box-shadow: 0 0 0 3px white;
+}
